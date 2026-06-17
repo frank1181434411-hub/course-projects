@@ -37,7 +37,7 @@ bool ShapeIO::loadFromFile(ShapeSaved& shapeSaved,const QString& filePath)
 std::unique_ptr<Shape> ShapeIO::parseShapeLine(const QString& line)
 {
     QStringList parts=line.split(" ");
-    if(parts.size() < 9)
+    if(parts.size()<9)
         return nullptr;
     QString type=parts[0];
     int x1=parts[1].toInt();

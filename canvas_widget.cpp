@@ -56,7 +56,7 @@ void CanvasWidget::paintEvent(QPaintEvent*)
     painter.fillRect(rect(),Qt::white);
     //绘制所有保存的图形
     const auto& shapes=shapeSaved->getShapes();
-    for(int i=0;i < static_cast<int>(shapes.size());++i)
+    for(int i=0;i<static_cast<int>(shapes.size());++i)
     {
         shapes[i]->draw(painter);
         if(isShapeSelected(i))
@@ -114,7 +114,7 @@ void CanvasWidget::deleteSelectedShape()
 void CanvasWidget::selectShapeAt(const QPoint& point,Qt::KeyboardModifiers modifiers)
 {
     const auto& shapes=shapeSaved->getShapes();
-    for(int i=static_cast<int>(shapes.size())-1;i >= 0;--i)
+    for(int i=static_cast<int>(shapes.size())-1;i>=0;--i)
     {
         if(shapes[i]->contains(point))
         {
@@ -156,8 +156,8 @@ QPoint CanvasWidget::applyShiftConstraint(const QPoint& point,Qt::KeyboardModifi
     int dx=point.x()-startPoint.x();
     int dy=point.y()-startPoint.y();
     int size=std::min(std::abs(dx),std::abs(dy));
-    int x=startPoint.x()+(dx < 0?-size:size);
-    int y=startPoint.y()+(dy < 0?-size:size);
+    int x=startPoint.x()+(dx<0?-size:size);
+    int y=startPoint.y()+(dy<0?-size:size);
     return QPoint(x,y);
 }
 bool CanvasWidget::isShapeSelected(int index) const

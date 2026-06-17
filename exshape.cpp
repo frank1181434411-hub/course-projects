@@ -21,7 +21,7 @@ double pointToSegmentDistance(const QPoint& point,const QPoint& a,const QPoint& 
     double py=point.y()-y;
     return std::sqrt(px*px+py*py);
 }
-bool nearSegment(const QPoint& point,const QPoint& a,const QPoint& b,int width) {return pointToSegmentDistance(point,a,b) <= std::max(6,width+3);}
+bool nearSegment(const QPoint& point,const QPoint& a,const QPoint& b,int width) {return pointToSegmentDistance(point,a,b)<=std::max(6,width+3);}
 }
 //LineShape
 LineShape::LineShape(QPoint startPoint,QPoint endPoint,QColor color,int penWidth)
@@ -103,7 +103,7 @@ bool EllipseShape::contains(const QPoint& point) const
     double cy=(startPoint.y()+endPoint.y())/2.0;
     double value=std::pow((point.x()-cx)/rx,2)+std::pow((point.y()-cy)/ry,2);
     double tolerance=std::max(0.08,static_cast<double>(penWidth+4)/std::min(rx,ry));
-    return std::abs(value-1.0) <= tolerance;
+    return std::abs(value-1.0)<=tolerance;
 }
 //DiamondShape
 DiamondShape::DiamondShape(QPoint startPoint,QPoint endPoint,QColor color,int penWidth)
