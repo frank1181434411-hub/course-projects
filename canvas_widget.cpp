@@ -18,13 +18,13 @@ CanvasWidget::CanvasWidget(QWidget* parent)
 CanvasWidget::~CanvasWidget() {}
 void CanvasWidget::mousePressEvent(QMouseEvent* event)
 {
-    if(currentMode==DrawMode::Select)
+    if(currentMode == DrawMode::Select)
     {
         selectShapeAt(event->pos(),event->modifiers());
         update();
         return;
     }
-    if(currentMode==DrawMode::None) return;
+    if(currentMode == DrawMode::None) return;
     isDrawing=true;
     startPoint=event->pos();
     currentEndPoint=event->pos();
@@ -32,14 +32,14 @@ void CanvasWidget::mousePressEvent(QMouseEvent* event)
 }
 void CanvasWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    if(!isDrawing||currentMode==DrawMode::None) return;
+    if(!isDrawing || currentMode == DrawMode::None) return;
     currentEndPoint=applyShiftConstraint(event->pos(),event->modifiers());
     createPreviewShape();
     update();
 }
 void CanvasWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-    if(!isDrawing||currentMode==DrawMode::None)
+    if(!isDrawing || currentMode == DrawMode::None)
     {
         isDrawing=false;
         return;
@@ -54,17 +54,16 @@ void CanvasWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     painter.fillRect(rect(),Qt::white);
-    //Draw all saved shapes
+    //绘制所有保存的图形
     const auto& shapes=shapeSaved->getShapes();
-    for(int i=0;i<static_cast<int>(shapes.size());++i)
+    for(int i=0;i < static_cast<int>(shapes.size());++i)
     {
         shapes[i]->draw(painter);
         if(isShapeSelected(i))
             drawSelection(painter,shapes[i].get());
     }
-    //Draw preview shape if available
-    if(previewShape)
-        previewShape->draw(painter);
+    //绘制预览图形
+    if(previewShape) previewShape->draw(painter);
 }
 void CanvasWidget::createPreviewShape()
 {
@@ -115,14 +114,14 @@ void CanvasWidget::deleteSelectedShape()
 void CanvasWidget::selectShapeAt(const QPoint& point,Qt::KeyboardModifiers modifiers)
 {
     const auto& shapes=shapeSaved->getShapes();
-    for(int i=static_cast<int>(shapes.size())-1;i>=0;--i)
+    for(int i=static_cast<int>(shapes.size())-1;i >= 0;--i)
     {
         if(shapes[i]->contains(point))
         {
             auto it=std::find(selectedShapeIndexes.begin(),selectedShapeIndexes.end(),i);
-            if(modifiers&Qt::ControlModifier)
+            if(modifiers & Qt::ControlModifier)
             {
-                if(it==selectedShapeIndexes.end())
+                if(it == selectedShapeIndexes.end())
                     selectedShapeIndexes.push_back(i);
                 else
                     selectedShapeIndexes.erase(it);
@@ -134,7 +133,7 @@ void CanvasWidget::selectShapeAt(const QPoint& point,Qt::KeyboardModifiers modif
             return;
         }
     }
-    if(!(modifiers&Qt::ControlModifier))
+    if(!(modifiers & Qt::ControlModifier))
         selectedShapeIndexes.clear();
 }
 void CanvasWidget::drawSelection(QPainter& painter,const Shape* shape)
@@ -152,16 +151,14 @@ void CanvasWidget::drawSelection(QPainter& painter,const Shape* shape)
 }
 QPoint CanvasWidget::applyShiftConstraint(const QPoint& point,Qt::KeyboardModifiers modifiers) const
 {
-    if(!(modifiers&Qt::ShiftModifier)) return point;
-    if(currentMode!=DrawMode::Rectangle&&currentMode!=DrawMode::Ellipse&&currentMode!=DrawMode::Diamond) return point;
+    if(!(modifiers & Qt::ShiftModifier)) return point;
+    if(currentMode != DrawMode::Rectangle && currentMode != DrawMode::Ellipse && currentMode != DrawMode::Diamond) return point;
     int dx=point.x()-startPoint.x();
     int dy=point.y()-startPoint.y();
     int size=std::min(std::abs(dx),std::abs(dy));
-    int x=startPoint.x()+(dx<0?-size:size);
-    int y=startPoint.y()+(dy<0?-size:size);
+    int x=startPoint.x()+(dx < 0?-size:size);
+    int y=startPoint.y()+(dy < 0?-size:size);
     return QPoint(x,y);
 }
 bool CanvasWidget::isShapeSelected(int index) const
-{
-    return std::find(selectedShapeIndexes.begin(),selectedShapeIndexes.end(),index)!=selectedShapeIndexes.end();
-}
+{return std::find(selectedShapeIndexes.begin(),selectedShapeIndexes.end(),index) != selectedShapeIndexes.end();}

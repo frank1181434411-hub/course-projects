@@ -37,7 +37,7 @@ bool ShapeIO::loadFromFile(ShapeSaved& shapeSaved,const QString& filePath)
 std::unique_ptr<Shape> ShapeIO::parseShapeLine(const QString& line)
 {
     QStringList parts=line.split(" ");
-    if(parts.size()<9)
+    if(parts.size() < 9)
         return nullptr;
     QString type=parts[0];
     int x1=parts[1].toInt();
@@ -51,13 +51,13 @@ std::unique_ptr<Shape> ShapeIO::parseShapeLine(const QString& line)
     QPoint startPoint(x1,y1);
     QPoint endPoint(x2,y2);
     QColor color(r,g,b);
-    if(type=="Line")
+    if(type == "Line")
         return std::make_unique<LineShape>(startPoint,endPoint,color,penWidth);
-    else if(type=="Rect")
+    else if(type == "Rect")
         return std::make_unique<RectShape>(startPoint,endPoint,color,penWidth);
-    else if(type=="Ellipse")
+    else if(type == "Ellipse")
         return std::make_unique<EllipseShape>(startPoint,endPoint,color,penWidth);
-    else if(type=="Diamond")
+    else if(type == "Diamond")
         return std::make_unique<DiamondShape>(startPoint,endPoint,color,penWidth);
     return nullptr;
 }
