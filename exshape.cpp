@@ -25,7 +25,7 @@ bool nearSegment(const QPoint& point,const QPoint& a,const QPoint& b,int width) 
 }
 //LineShape
 LineShape::LineShape(QPoint startPoint,QPoint endPoint,QColor color,int penWidth)
-    :Shape(startPoint,endPoint,color,penWidth) {}
+    :Shape(startPoint,endPoint,color,penWidth){}
 void LineShape::draw(QPainter& painter) const
 {
     painter.setPen(QPen(color,penWidth));
@@ -42,7 +42,7 @@ QString LineShape::saveText() const
 bool LineShape::contains(const QPoint& point) const {return nearSegment(point,startPoint,endPoint,penWidth);}
 //RectShape
 RectShape::RectShape(QPoint startPoint,QPoint endPoint,QColor color,int penWidth)
-    :Shape(startPoint,endPoint,color,penWidth) {}
+    :Shape(startPoint,endPoint,color,penWidth){}
 void RectShape::draw(QPainter& painter) const
 {
     painter.setPen(QPen(color,penWidth));
@@ -73,7 +73,7 @@ bool RectShape::contains(const QPoint& point) const
 }
 //EllipseShape
 EllipseShape::EllipseShape(QPoint startPoint,QPoint endPoint,QColor color,int penWidth)
-    :Shape(startPoint,endPoint,color,penWidth) {}
+    :Shape(startPoint,endPoint,color,penWidth){}
 void EllipseShape::draw(QPainter& painter) const
 {
     painter.setPen(QPen(color,penWidth));
@@ -107,7 +107,7 @@ bool EllipseShape::contains(const QPoint& point) const
 }
 //DiamondShape
 DiamondShape::DiamondShape(QPoint startPoint,QPoint endPoint,QColor color,int penWidth)
-    :Shape(startPoint,endPoint,color,penWidth) {}
+    :Shape(startPoint,endPoint,color,penWidth){}
 void DiamondShape::draw(QPainter& painter) const
 {
     painter.setPen(QPen(color,penWidth));

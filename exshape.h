@@ -37,4 +37,4 @@ public:
     QString saveText() const override;
     bool contains(const QPoint& point) const override;
 };
-#endif // EXSHAPE_H
+#endif //EXSHAPE_H

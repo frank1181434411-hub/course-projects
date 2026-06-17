@@ -10,13 +10,11 @@ public:
     Shape(QPoint startPoint,QPoint endPoint,QColor color,int penWidth);
     virtual ~Shape()=default;
 
-    //Virtual functions
     virtual void draw(QPainter& painter) const=0;
     virtual QString typeName() const=0;
     virtual QString saveText() const=0;
     virtual bool contains(const QPoint& point) const=0;
 
-    //Getters
     QPoint getStartPoint() const{return startPoint;}
     QPoint getEndPoint() const{return endPoint;}
     QColor getColor() const{return color;}
@@ -28,4 +26,4 @@ protected:
     QColor color;
     int penWidth;
 };
-#endif // SHAPE_H
+#endif //SHAPE_H

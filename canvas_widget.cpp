@@ -50,13 +50,13 @@ void CanvasWidget::mouseReleaseEvent(QMouseEvent* event)
     isDrawing=false;
     update();
 }
-void CanvasWidget::paintEvent(QPaintEvent* /*event*/)
+void CanvasWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     painter.fillRect(rect(),Qt::white);
     //Draw all saved shapes
     const auto& shapes=shapeSaved->getShapes();
-    for(int i=0;i<static_cast<int>(shapes.size());i++)
+    for(int i=0;i<static_cast<int>(shapes.size());++i)
     {
         shapes[i]->draw(painter);
         if(isShapeSelected(i))
@@ -115,7 +115,7 @@ void CanvasWidget::deleteSelectedShape()
 void CanvasWidget::selectShapeAt(const QPoint& point,Qt::KeyboardModifiers modifiers)
 {
     const auto& shapes=shapeSaved->getShapes();
-    for(int i=static_cast<int>(shapes.size())-1;i>=0;i--)
+    for(int i=static_cast<int>(shapes.size())-1;i>=0;--i)
     {
         if(shapes[i]->contains(point))
         {
