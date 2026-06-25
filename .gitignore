@@ -1,0 +1,39 @@
+# Ignore everything by default.
+*
+
+# Keep directories traversable so whitelist rules below can match files.
+!*/
+
+# Keep project source files.
+!*.cpp
+!*.h
+!*.hpp
+!*.c
+!*.cc
+!*.cxx
+!*.pro
+!README.md
+!.gitignore
+
+# Always ignore generated build outputs.
+.vscode/
+.agents/
+.codex/
+debug/
+release/
+build/
+
+Makefile
+Makefile.Debug
+Makefile.Release
+.qmake.stash
+
+*.o
+*.obj
+*.exe
+moc_*.cpp
+moc_predefs.h
+object_script.*
+
+Thumbs.db
+Desktop.ini
