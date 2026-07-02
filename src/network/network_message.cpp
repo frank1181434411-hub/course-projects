@@ -100,14 +100,15 @@ namespace NetworkMessage
     {
         pkt << t.id << t.x << t.y << t.direction << t.hp << t.alive << t.enemyType;
     }
-    bool readTankSnapshot(sf::Packet& pkt, TankSnapshot& t)
+    bool readTankSnapshot(sf::Packet& pkt,TankSnapshot& t)
     {
-        if (!(pkt >> t.id)) return false;
-        if (!(pkt >> t.x)) return false;
-        if (!(pkt >> t.y)) return false;
-        if (!(pkt >> t.direction)) return false;
-        if (!(pkt >> t.hp)) return false;
-        if (!(pkt >> t.alive)) return false;
+        if(!(pkt>>t.id)) return false;
+        if(!(pkt>>t.x)) return false;
+        if(!(pkt>>t.y)) return false;
+        if(!(pkt>>t.direction)) return false;
+        if(!(pkt>>t.hp)) return false;
+        if(!(pkt>>t.alive)) return false;
+        if(!(pkt>>t.enemyType)) return false;
         return true;
     }
     void writeBulletSnapshot(sf::Packet& pkt, const BulletSnapshot& b)
@@ -138,46 +139,89 @@ namespace NetworkMessage
         if (!(pkt >> i.alive)) return false;
         return true;
     }
-    bool readGameSnapshot(sf::Packet& pkt, GameSnapshot& snap)
+    bool readGameSnapshot(sf::Packet& pkt,GameSnapshot& snap)
     {
-        if (!(pkt >> snap.status)) return false;
-        if (!readTankSnapshot(pkt, snap.playerOne)) return false;
-        if (!readTankSnapshot(pkt, snap.playerTwo)) return false;
-        uint32_t n;
-        if (!(pkt >> n)) return false;
+        if(!(pkt>>snap.mapPath))
+            return false;
+
+        if(!(pkt>>snap.status))
+            return false;
+
+        if(!readTankSnapshot(pkt,snap.playerOne))
+            return false;
+
+        if(!readTankSnapshot(pkt,snap.playerTwo))
+            return false;
+
+        std::uint32_t count=0;
+
+        if(!(pkt>>count))
+            return false;
+
         snap.enemies.clear();
-        for (uint32_t i = 0; i < n; i++)
+
+        for(std::uint32_t i=0;i<count;++i)
         {
-            TankSnapshot t;
-            if (!readTankSnapshot(pkt, t)) return false;
-            snap.enemies.push_back(t);
+            TankSnapshot tank;
+
+            if(!readTankSnapshot(pkt,tank))
+                return false;
+
+            snap.enemies.push_back(tank);
         }
-        if (!(pkt >> n)) return false;
+
+        if(!(pkt>>count))
+            return false;
+
         snap.bullets.clear();
-        for (uint32_t i = 0; i < n; i++)
+
+        for(std::uint32_t i=0;i<count;++i)
         {
-            BulletSnapshot b;
-            if (!readBulletSnapshot(pkt, b)) return false;
-            snap.bullets.push_back(b);
+            BulletSnapshot bullet;
+
+            if(!readBulletSnapshot(pkt,bullet))
+                return false;
+
+            snap.bullets.push_back(bullet);
         }
-        if (!(pkt >> n)) return false;
+
+        if(!(pkt>>count))
+            return false;
+
         snap.items.clear();
-        for (uint32_t i = 0; i < n; i++)
+
+        for(std::uint32_t i=0;i<count;++i)
         {
-            ItemSnapshot it;
-            if (!readItemSnapshot(pkt, it)) return false;
-            snap.items.push_back(it);
+            ItemSnapshot item;
+
+            if(!readItemSnapshot(pkt,item))
+                return false;
+
+            snap.items.push_back(item);
         }
-        if (!(pkt >> snap.baseHp)) return false;
-        if (!(pkt >> snap.baseAlive)) return false;
-        if (!(pkt >> n)) return false;
+
+        if(!(pkt>>snap.baseHp))
+            return false;
+
+        if(!(pkt>>snap.baseAlive))
+            return false;
+
+        if(!(pkt>>count))
+            return false;
+
         snap.destroyedBricks.clear();
-        for (uint32_t i = 0; i < n; i++)
+
+        for(std::uint32_t i=0;i<count;++i)
         {
-            int x, y;
-            if (!(pkt >> x >> y)) return false;
-            snap.destroyedBricks.emplace_back(x, y);
+            int x=0;
+            int y=0;
+
+            if(!(pkt>>x>>y))
+                return false;
+
+            snap.destroyedBricks.emplace_back(x,y);
         }
+
         return true;
     }
 }
