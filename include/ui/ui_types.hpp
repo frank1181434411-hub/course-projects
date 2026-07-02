@@ -47,5 +47,5 @@ struct UIEventResult {
 
 struct GameStartConfig {
     std::string mapPath = "assets/maps/single/map_test.txt";
-    AIDifficulty aiDifficulty = AIDifficulty::Hard;
+    AIDifficulty aiDifficulty = AIDifficulty::Normal;
 };

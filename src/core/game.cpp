@@ -1,6 +1,7 @@
 #include "core/game.hpp"
 #include "ai/enemy_ai.hpp"
 #include "world/collision.hpp"
+#include "ui/ui_common.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -522,10 +523,11 @@ void Game::updateHost(float deltaTime)
         return;
     }
 
-PlayerInputState remoteInput;
-
-if(networkSession_.pollRemoteInput(remoteInput))
-    remoteInput_=remoteInput;
+    PlayerInputState remoteInput;
+    if(networkSession_.pollRemoteInput(remoteInput))
+    {
+        remoteInput_=remoteInput;
+    }
 
     std::vector<sf::FloatRect> playerOneBlocks;
     if(base_->isAlive())
@@ -956,8 +958,9 @@ void Game::render()
 
     hud_.draw(
         window_,
-        playerOne_ ? &*playerOne_ : nullptr,
-        playerTwo_ ? &*playerTwo_ : nullptr,
+        playerOne_?&*playerOne_:nullptr,
+        playerTwo_?&*playerTwo_:nullptr,
+        base_?&*base_:nullptr,
         networkSession_.mode()
     );
 

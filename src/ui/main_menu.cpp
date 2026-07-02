@@ -40,7 +40,7 @@ void MainMenu::draw(sf::RenderWindow& window) const
         window,
         {"Single Player", "Host Multiplayer", "Join Multiplayer", "Setting", "Exit"},
         selectedIndex_,
-        {400.f, 300.f},
+        {400.f, 328.f},
         58.f,
         28
     );

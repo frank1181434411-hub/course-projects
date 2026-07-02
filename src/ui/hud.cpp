@@ -1,10 +1,10 @@
 #include "ui/hud.hpp"
+#include "ui/ui_common.hpp"
 
 #include <cmath>
 #include <algorithm>
+#include <string>
 #include <sstream>
-
-#include "ui/ui_common.hpp"
 
 namespace {
 std::string powerUpText(const PlayerTank* player)
@@ -25,7 +25,7 @@ std::string powerUpText(const PlayerTank* player)
 }
 }
 
-void Hud::draw(sf::RenderWindow& window, const PlayerTank* playerOne, const PlayerTank* playerTwo, NetworkMode mode) const
+void Hud::draw(sf::RenderWindow& window,const PlayerTank* playerOne,const PlayerTank* playerTwo,const Base* base,NetworkMode mode) const
 {
     const bool showSecond = mode != NetworkMode::Offline;
 
@@ -59,6 +59,31 @@ void Hud::draw(sf::RenderWindow& window, const PlayerTank* playerOne, const Play
 
     if (showSecond) {
         drawCard(playerTwo, "P2", {570.f, 10.f});
+    }
+
+    if(base!=nullptr)
+    {
+        const float windowWidth=static_cast<float>(window.getSize().x);
+
+        const sf::Vector2f panelPosition
+        {
+            windowWidth/2.f-120.f,10.f
+        };
+
+        ui::drawPanel(window,panelPosition,{240.f,52.f},sf::Color(18,24,36,210),sf::Color(95,136,186,160),1.5f);
+
+        const int hp=base->getHp();
+
+        sf::Text baseText=ui::makeText("BASE HP: "+std::to_string(hp),22,hp>0?sf::Color(255,224,122):sf::Color(230,70,70));
+
+        const sf::FloatRect bounds=
+            baseText.getLocalBounds();
+
+        baseText.setOrigin({bounds.position.x+bounds.size.x/2.f,bounds.position.y+bounds.size.y/2.f});
+
+        baseText.setPosition({windowWidth/2.f,panelPosition.y+26.f});
+
+        window.draw(baseText);
     }
 
     if (mode == NetworkMode::Host && playerTwo == nullptr) {

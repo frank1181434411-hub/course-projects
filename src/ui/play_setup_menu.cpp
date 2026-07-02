@@ -12,7 +12,7 @@ namespace {
 std::string mapDisplayName(const std::string& path)
 {
     const std::filesystem::path fsPath(path);
-    return fsPath.filename().string();
+    return fsPath.stem().string();
 }
 
 std::string difficultyName(AIDifficulty difficulty)
