@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <SFML/System.hpp>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -30,12 +31,13 @@ struct PlayerInputState
 
 struct TankSnapshot
 {
-    int id = 0;
-    float x = 0.f;
-    float y = 0.f;
-    int direction = 0;
-    int hp = 0;
-    bool alive = false;
+    int id=0;
+    float x=0.f;
+    float y=0.f;
+    int direction=0;
+    int hp=0;
+    bool alive=false;
+    int enemyType=-1;
 };
 
 struct BulletSnapshot
@@ -60,9 +62,10 @@ struct ItemSnapshot
 
 struct GameSnapshot
 {
-    int status = 0;
-    int baseHp = 0;
-    bool baseAlive = false;
+    std::string mapPath;
+    int status=0;
+    int baseHp=0;
+    bool baseAlive=false;
 
     TankSnapshot playerOne;
     TankSnapshot playerTwo;
@@ -70,5 +73,5 @@ struct GameSnapshot
     std::vector<TankSnapshot> enemies;
     std::vector<BulletSnapshot> bullets;
     std::vector<ItemSnapshot> items;
-    std::vector<std::pair<int, int>> destroyedBricks;
+    std::vector<std::pair<int,int>> destroyedBricks;
 };

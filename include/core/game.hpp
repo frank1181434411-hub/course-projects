@@ -6,6 +6,9 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <set>
+#include <string>
+#include <utility>
 
 #include "ai/ai_controller.hpp"
 #include "core/game_status.hpp"
@@ -70,9 +73,12 @@ private:
     std::vector<std::unique_ptr<AIController>> enemyAis_;
     std::vector<Bullet> bullets_;
     std::vector<Item> items_;
+    std::string loadedMapPath_;
+    std::set<std::pair<int,int>> destroyedBricks_;
     PlayerInputState localInput_;
     PlayerInputState remoteInput_;
     bool hasTwoPlayers_=false;
     GameStartConfig currentConfig_;
     GameStatus status_;
+    
 };

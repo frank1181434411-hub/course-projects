@@ -159,13 +159,18 @@ void NetworkSession::handleMessage(sf::Packet& packet) {
         break;
     }
 
-    case NetworkMessage::MessageType::TileChanged: {
-        int x, y, t;
-        if (NetworkMessage::readTileChanged(packet, x, y, t)) {
-            pendingTileChange_ = { x, y };
-            pendingTileType_ = t;
+    case NetworkMessage::MessageType::TileChanged:
+    {
+        int x=0;
+        int y=0;
+        int tileType=0;
+
+        if(NetworkMessage::readTileChanged(packet,x,y,tileType))
+        {
+            pendingTileChanges_.push({x,y,tileType});
         }
-        break;
+
+    break;
     }
 
     case NetworkMessage::MessageType::Disconnect:
@@ -216,16 +221,21 @@ bool NetworkSession::pollSnapshot(GameSnapshot& snapshot) {
     return false;
 }
 
-bool NetworkSession::pollTileChanged(int& x, int& y, int& tileType) {
-    if (pendingTileChange_.has_value() && pendingTileType_.has_value()) {
-        x = pendingTileChange_->first;
-        y = pendingTileChange_->second;
-        tileType = pendingTileType_.value();
-        pendingTileChange_.reset();
-        pendingTileType_.reset();
-        return true;
-    }
-    return false;
+bool NetworkSession::pollTileChanged(int& x,int& y,int& tileType)
+{
+    if(pendingTileChanges_.empty())
+        return false;
+
+    const TileChange change=
+        pendingTileChanges_.front();
+
+    pendingTileChanges_.pop();
+
+    x=change.x;
+    y=change.y;
+    tileType=change.tileType;
+
+    return true;
 }
 
 bool NetworkSession::pollWelcome() {

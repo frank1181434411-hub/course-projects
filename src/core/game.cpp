@@ -123,6 +123,8 @@ Game::Game()
 void Game::initializeWorld(const GameStartConfig& config)
 {
     currentConfig_=config;
+    loadedMapPath_=config.mapPath;
+    destroyedBricks_.clear();
     map_.clear();
     playerOne_.reset();
     playerTwo_.reset();
@@ -440,7 +442,10 @@ void Game::updateOffline(float deltaTime)
         {
             const Tile* tile=map_.tileAt(hitTileX,hitTileY);
             if(tile!=nullptr && tile->type()==TileType::Brick)
+            {
                 map_.setTile(hitTileX,hitTileY,TileType::Empty);
+                destroyedBricks_.insert({hitTileX,hitTileY});
+            }
             hit=true;
         }
         else if(Collision::hitsMapBounds(map_,bullet->getBounds()))
@@ -588,6 +593,7 @@ void Game::updateHost(float deltaTime)
             if(tile!=nullptr && tile->type()==TileType::Brick)
             {
                 map_.setTile(hitTileX,hitTileY,TileType::Empty);
+                destroyedBricks_.insert({hitTileX,hitTileY});
                 networkSession_.sendTileChanged(hitTileX,hitTileY,static_cast<int>(TileType::Empty));
             }
             hit=true;
@@ -684,6 +690,28 @@ void Game::collectLocalInput(PlayerInputState& input)
 
 void Game::applySnapshot(const GameSnapshot& snapshot)
 {
+    if(!snapshot.mapPath.empty() && snapshot.mapPath!=loadedMapPath_)
+    {
+        if(!map_.loadFromFile(snapshot.mapPath))
+        {
+            std::cerr << "[Game] Failed to load network map: " << snapshot.mapPath <<'\n';
+            return;
+        }
+        loadedMapPath_=snapshot.mapPath;
+        currentConfig_.mapPath=snapshot.mapPath;
+        sf::Vector2f basePosition{400.f,550.f};
+        if(map_.hasBasePosition()) basePosition=map_.basePosition();
+        base_.emplace(basePosition.x,basePosition.y);
+    }
+
+    destroyedBricks_.clear();
+
+    for(const auto& position:snapshot.destroyedBricks)
+    {
+        destroyedBricks_.insert(position);
+        map_.setTile(position.first,position.second,TileType::Empty);
+    }
+
     status_=static_cast<GameStatus>(snapshot.status);
 
     if(!playerOne_)
@@ -709,12 +737,10 @@ void Game::applySnapshot(const GameSnapshot& snapshot)
     enemyAis_.clear();
     for(const auto& enemySnapshot:snapshot.enemies)
     {
-        addEnemy(
-            enemySnapshot.x,
-            enemySnapshot.y,
-            EnemyType::Light,
-            currentConfig_.aiDifficulty
-        );
+        const EnemyType type=
+        static_cast<EnemyType>(enemySnapshot.enemyType);
+
+        addEnemy(enemySnapshot.x,enemySnapshot.y,type,currentConfig_.aiDifficulty);
         enemies_.back().setDirection(static_cast<Direction>(enemySnapshot.direction));
         enemies_.back().setHp(enemySnapshot.hp);
     }
@@ -744,6 +770,8 @@ void Game::applySnapshot(const GameSnapshot& snapshot)
 GameSnapshot Game::createSnapshot() const
 {
     GameSnapshot snapshot;
+
+    snapshot.mapPath=currentConfig_.mapPath;
     snapshot.status=static_cast<int>(status_);
 
     if(playerOne_)
@@ -754,6 +782,7 @@ GameSnapshot Game::createSnapshot() const
         snapshot.playerOne.direction=static_cast<int>(playerOne_->getDirection());
         snapshot.playerOne.hp=playerOne_->getHp();
         snapshot.playerOne.alive=playerOne_->isAlive();
+        snapshot.playerOne.enemyType=-1;
     }
 
     if(playerTwo_)
@@ -764,6 +793,7 @@ GameSnapshot Game::createSnapshot() const
         snapshot.playerTwo.direction=static_cast<int>(playerTwo_->getDirection());
         snapshot.playerTwo.hp=playerTwo_->getHp();
         snapshot.playerTwo.alive=playerTwo_->isAlive();
+        snapshot.playerTwo.enemyType=-1;
     }
 
     for(const auto& enemy:enemies_)
@@ -775,6 +805,7 @@ GameSnapshot Game::createSnapshot() const
         enemySnapshot.direction=static_cast<int>(enemy.getDirection());
         enemySnapshot.hp=enemy.getHp();
         enemySnapshot.alive=enemy.isAlive();
+        enemySnapshot.enemyType=static_cast<int>(enemy.getType());
         snapshot.enemies.push_back(enemySnapshot);
     }
 
@@ -812,7 +843,10 @@ GameSnapshot Game::createSnapshot() const
         snapshot.baseAlive=base_->isAlive();
     }
 
+    snapshot.destroyedBricks.assign(destroyedBricks_.begin(),destroyedBricks_.end());
+
     return snapshot;
+
 }
 
 void Game::addEnemy(float x,float y,EnemyType type,AIDifficulty difficulty)

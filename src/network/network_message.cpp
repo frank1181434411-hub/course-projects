@@ -27,8 +27,8 @@ namespace NetworkMessage
     sf::Packet makeGameSnapshot(const GameSnapshot& snap)
     {
         sf::Packet p;
-        p << static_cast<uint8_t>(MessageType::GameSnapshot);
-        p << snap.status;
+        p<<static_cast<uint8_t>(MessageType::GameSnapshot);
+        p<<snap.mapPath<<snap.status;
         writeTankSnapshot(p, snap.playerOne);
         writeTankSnapshot(p, snap.playerTwo);
         uint32_t n = static_cast<uint32_t>(snap.enemies.size());
@@ -96,9 +96,9 @@ namespace NetworkMessage
         if (!(pkt >> t)) return false;
         return true;
     }
-    void writeTankSnapshot(sf::Packet& pkt, const TankSnapshot& t)
+    void writeTankSnapshot(sf::Packet& pkt,const TankSnapshot& t)
     {
-        pkt << t.id << t.x << t.y << t.direction << t.hp << t.alive;
+        pkt << t.id << t.x << t.y << t.direction << t.hp << t.alive << t.enemyType;
     }
     bool readTankSnapshot(sf::Packet& pkt, TankSnapshot& t)
     {
