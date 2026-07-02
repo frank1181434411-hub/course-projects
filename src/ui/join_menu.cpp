@@ -27,7 +27,7 @@ UIEventResult JoinMenu::handleEvent(const sf::Event& event)
             selectedIndex_=(selectedIndex_+1)%rowCount;
             result.sound=UISoundEvent::MenuMove;
         }
-        else if(key->scancode==sf::Keyboard::Scancode::NumpadEnter)
+        else if(key->code==sf::Keyboard::Key::Enter)
         {
             if(!hosts_.empty() && selectedIndex_<static_cast<int>(hosts_.size()))
                 result.action=MenuAction::JoinSelectedHost;

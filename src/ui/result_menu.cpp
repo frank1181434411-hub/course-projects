@@ -29,7 +29,7 @@ UIEventResult ResultMenu::handleEvent(const sf::Event& event)
         } else if (key->code == sf::Keyboard::Key::Down || key->code == sf::Keyboard::Key::S) {
             selectedIndex_ = (selectedIndex_ + 1) % static_cast<int>(actions.size());
             result.sound = UISoundEvent::MenuMove;
-        } else if (key->scancode == sf::Keyboard::Scancode::NumpadEnter) {
+        } else if (key->code == sf::Keyboard::Key::Enter) {
             result.action = actions[static_cast<std::size_t>(selectedIndex_)];
             result.sound = UISoundEvent::MenuConfirm;
         }

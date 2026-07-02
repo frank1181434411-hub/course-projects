@@ -161,7 +161,7 @@ UIEventResult PlaySetupMenu::handleEvent(const sf::Event& event)
                 config_.aiDifficulty = nextDifficulty(config_.aiDifficulty);
                 result.sound = UISoundEvent::MenuMove;
             }
-        } else if (key->scancode == sf::Keyboard::Scancode::NumpadEnter) {
+        } else if (key->code == sf::Keyboard::Key::Enter) {
             if (selectedIndex_ == 2) {
                 clampSelection();
                 result.action = MenuAction::StartGame;
