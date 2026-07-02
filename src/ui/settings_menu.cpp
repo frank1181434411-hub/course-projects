@@ -41,7 +41,7 @@ UIEventResult SettingsMenu::handleEvent(const sf::Event& event)
 {
     UIEventResult result;
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
-        if (key->code == sf::Keyboard::Key::Enter || key->code == sf::Keyboard::Key::Space || key->code == sf::Keyboard::Key::Escape) {
+        if (key->scancode == sf::Keyboard::Scancode::NumpadEnter || key->code == sf::Keyboard::Key::Escape) {
             result.action = MenuAction::Back;
             result.sound = UISoundEvent::MenuBack;
         }

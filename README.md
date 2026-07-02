@@ -43,6 +43,14 @@ Tank Battle 是一个使用 C++17 和 SFML 3.1.0 开发的复古坦克大战课�
 - MSYS2 UCRT64
 - Visual Studio Code
 
+## 基本操作
+
+- 玩家移动：`W/A/S/D`
+- 玩家射击：`Space`
+- UI 选择和切换：方向键或 `W/A/S/D`
+- UI 确认：右侧小键盘 `Enter`
+- 暂停或返回：`Esc`
+
 ## 目录结构
 
 ```text
