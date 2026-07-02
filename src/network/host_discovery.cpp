@@ -1,12 +1,35 @@
 #include "network/host_discovery.hpp"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 
 namespace
 {
 constexpr const char* DiscoveryMagic="TankBattleHost";
 constexpr float AnnouncementInterval=1.f;
 constexpr float HostTimeout=4.f;
+
+std::optional<sf::IpAddress> localBroadcastAddress()
+{
+    const std::optional<sf::IpAddress> localAddress=sf::IpAddress::getLocalAddress();
+    if(!localAddress.has_value())
+        return std::nullopt;
+
+    const std::string address=localAddress->toString();
+    const std::size_t lastDot=address.rfind('.');
+    if(lastDot==std::string::npos)
+        return std::nullopt;
+
+    return sf::IpAddress::fromString(address.substr(0,lastDot+1)+"255");
+}
+
+sf::Packet makeAnnouncementPacket(unsigned short gamePort)
+{
+    sf::Packet packet;
+    packet<<std::string(DiscoveryMagic)<<std::string("Tank Battle Host")<<gamePort;
+    return packet;
+}
 }
 
 HostDiscovery::HostDiscovery()
@@ -19,6 +42,10 @@ void HostDiscovery::beginAdvertising(unsigned short gamePort)
     if(listening_)
         stopListening();
 
+    socket_.unbind();
+    if(socket_.bind(sf::Socket::AnyPort)!=sf::Socket::Status::Done)
+        return;
+
     advertising_=true;
     gamePort_=gamePort;
     socket_.setBlocking(false);
@@ -29,6 +56,7 @@ void HostDiscovery::beginAdvertising(unsigned short gamePort)
 void HostDiscovery::stopAdvertising()
 {
     advertising_=false;
+    socket_.unbind();
 }
 
 void HostDiscovery::beginListening()
@@ -89,10 +117,17 @@ const std::vector<DiscoveredHost>& HostDiscovery::hosts() const noexcept{return 
 
 void HostDiscovery::sendAnnouncement()
 {
-    sf::Packet packet;
-    packet<<std::string(DiscoveryMagic)<<std::string("Tank Battle Host")<<gamePort_;
-    const sf::Socket::Status status=socket_.send(packet,sf::IpAddress::Broadcast,DiscoveryPort);
+    sf::Packet broadcastPacket=makeAnnouncementPacket(gamePort_);
+    sf::Socket::Status status=socket_.send(broadcastPacket,sf::IpAddress::Broadcast,DiscoveryPort);
     (void)status;
+
+    const std::optional<sf::IpAddress> subnetBroadcast=localBroadcastAddress();
+    if(subnetBroadcast.has_value() && subnetBroadcast.value()!=sf::IpAddress::Broadcast)
+    {
+        sf::Packet subnetPacket=makeAnnouncementPacket(gamePort_);
+        status=socket_.send(subnetPacket,subnetBroadcast.value(),DiscoveryPort);
+        (void)status;
+    }
 }
 
 void HostDiscovery::receiveAnnouncements()
