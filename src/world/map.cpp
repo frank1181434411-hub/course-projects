@@ -8,7 +8,7 @@ bool isValidMapCharacter(char value) noexcept
     return value=='.'||value==' '||
         value=='#'||value=='S'||
         value=='W'||value=='G'||
-        value=='P'||value=='B'||
+        value=='P'||value=='X'||value=='Y'||value=='B'||
         value=='L'||value=='H';
 }
 }
@@ -92,8 +92,10 @@ void Map::clear()
     height_=0;
     tiles_.clear();
     hasPlayerSpawn_=false;
+    hasSecondPlayerSpawn_=false;
     hasBasePosition_=false;
     playerSpawn_={0.f,0.f};
+    secondPlayerSpawn_={0.f,0.f};
     basePosition_={0.f,0.f};
     enemySpawns_.clear();
     lastError_.clear();
@@ -156,6 +158,10 @@ bool Map::hasPlayerSpawn() const noexcept{return hasPlayerSpawn_;}
 
 sf::Vector2f Map::playerSpawn() const noexcept{return playerSpawn_;}
 
+bool Map::hasSecondPlayerSpawn() const noexcept{return hasSecondPlayerSpawn_;}
+
+sf::Vector2f Map::secondPlayerSpawn() const noexcept{return secondPlayerSpawn_;}
+
 bool Map::hasBasePosition() const noexcept{return hasBasePosition_;}
 
 sf::Vector2f Map::basePosition() const noexcept{return basePosition_;}
@@ -192,10 +198,15 @@ int Map::index(int x,int y) const noexcept{return y*width_+x;}
 
 void Map::readSpecialPoint(char value,int x,int y)
 {
-    if(value=='P')
+    if(value=='P'||value=='X')
     {
         hasPlayerSpawn_=true;
         playerSpawn_=tileCenter(x,y);
+    }
+    else if(value=='Y')
+    {
+        hasSecondPlayerSpawn_=true;
+        secondPlayerSpawn_=tileCenter(x,y);
     }
     else if(value=='B')
     {

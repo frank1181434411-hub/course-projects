@@ -36,7 +36,7 @@ char Tile::toChar() const noexcept
 
 TileType Tile::fromChar(char value) noexcept
 {
-    if(value=='.'||value==' '||value=='P'||value=='B'||value=='L'||value=='H')
+    if(value=='.'||value==' '||value=='P'||value=='X'||value=='Y'||value=='B'||value=='L'||value=='H')
         return TileType::Empty;
     
 

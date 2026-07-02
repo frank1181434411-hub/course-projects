@@ -28,9 +28,19 @@ add_executable(TankBattle
     include/ai/ai_controller.hpp
     include/ai/enemy_ai.hpp
     include/ai/tank_command.hpp
+    include/core/game_status.hpp
     include/network/network_message.hpp
     include/network/network_session.hpp
     include/network/network_types.hpp
+    include/ui/hud.hpp
+    include/ui/join_menu.hpp
+    include/ui/main_menu.hpp
+    include/ui/pause_menu.hpp
+    include/ui/play_setup_menu.hpp
+    include/ui/result_menu.hpp
+    include/ui/settings_menu.hpp
+    include/ui/ui_common.hpp
+    include/ui/ui_types.hpp
     include/world/item_spawner.hpp
     src/main.cpp
     src/ai/enemy_ai.cpp
@@ -44,6 +54,14 @@ add_executable(TankBattle
     src/entity/tank.cpp
     src/network/network_message.cpp
     src/network/network_session.cpp
+    src/ui/hud.cpp
+    src/ui/join_menu.cpp
+    src/ui/main_menu.cpp
+    src/ui/pause_menu.cpp
+    src/ui/play_setup_menu.cpp
+    src/ui/result_menu.cpp
+    src/ui/settings_menu.cpp
+    src/ui/ui_common.cpp
     src/world/collision.cpp
     src/world/item_spawner.cpp
     src/world/map.cpp

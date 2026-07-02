@@ -38,6 +38,9 @@ public:
     bool hasPlayerSpawn() const noexcept;
     sf::Vector2f playerSpawn() const noexcept;
 
+    bool hasSecondPlayerSpawn() const noexcept;
+    sf::Vector2f secondPlayerSpawn() const noexcept;
+
     bool hasBasePosition() const noexcept;
     sf::Vector2f basePosition() const noexcept;
 
@@ -55,8 +58,10 @@ private:
     int height_=0;
     std::vector<Tile> tiles_;
     bool hasPlayerSpawn_=false;
+    bool hasSecondPlayerSpawn_=false;
     bool hasBasePosition_=false;
     sf::Vector2f playerSpawn_{0.f,0.f};
+    sf::Vector2f secondPlayerSpawn_{0.f,0.f};
     sf::Vector2f basePosition_{0.f,0.f};
     std::vector<EnemySpawn> enemySpawns_;
     std::string lastError_;

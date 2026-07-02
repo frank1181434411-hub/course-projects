@@ -1,0 +1,63 @@
+#include "ui/hud.hpp"
+
+#include <cmath>
+#include <algorithm>
+#include <sstream>
+
+#include "ui/ui_common.hpp"
+
+namespace {
+std::string powerUpText(const PlayerTank* player)
+{
+    if (player == nullptr || !player->isAlive()) {
+        return "None";
+    }
+
+    if (!player->hasDamageBuff()) {
+        return "None";
+    }
+
+    std::ostringstream stream;
+    stream.setf(std::ios::fixed);
+    stream.precision(1);
+    stream << "Ammo Boost: " << std::max(0.f, player->getDamageBuffRemaining()) << "s";
+    return stream.str();
+}
+}
+
+void Hud::draw(sf::RenderWindow& window, const PlayerTank* playerOne, const PlayerTank* playerTwo, NetworkMode mode) const
+{
+    const bool showSecond = mode != NetworkMode::Offline;
+
+    auto drawCard = [&](const PlayerTank* player, const std::string& title, sf::Vector2f position) {
+        ui::drawPanel(window, position, {220.f, 100.f}, sf::Color(18, 24, 36, 185), sf::Color(95, 136, 186, 120), 1.5f);
+
+        sf::Text label = ui::makeText(title, 22, sf::Color(255, 224, 122));
+        label.setPosition({position.x + 14.f, position.y + 10.f});
+        window.draw(label);
+
+        const int hp = player != nullptr ? player->getHp() : 0;
+        const int maxHp = player != nullptr ? player->getMaxHp() : 0;
+        const int lives = player != nullptr && player->isAlive() ? 1 : 0;
+
+        sf::Text hpText = ui::makeText("HP: " + std::to_string(hp) + "/" + std::to_string(maxHp), 18, sf::Color::White);
+        hpText.setPosition({position.x + 14.f, position.y + 38.f});
+        window.draw(hpText);
+
+        sf::Text livesText = ui::makeText("Lives: " + std::to_string(lives), 18, sf::Color::White);
+        livesText.setPosition({position.x + 14.f, position.y + 58.f});
+        window.draw(livesText);
+
+        sf::Text buffText = ui::makeText("Power Up: " + powerUpText(player), 18, sf::Color::White);
+        buffText.setPosition({position.x + 14.f, position.y + 78.f});
+        window.draw(buffText);
+    };
+
+    if (playerOne != nullptr) {
+        drawCard(playerOne, "P1", {10.f, 10.f});
+    }
+
+    if (showSecond) {
+        drawCard(playerTwo, "P2", {570.f, 10.f});
+    }
+}

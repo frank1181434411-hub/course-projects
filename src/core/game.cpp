@@ -2,6 +2,7 @@
 #include "ai/enemy_ai.hpp"
 #include "world/collision.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -91,6 +92,14 @@ Game::Game()
       map_(),
       itemSpawner_(map_),
       networkSession_(),
+      mainMenu_(),
+      playSetupMenu_(),
+      hostSetupMenu_("assets/maps/coop"),
+      joinMenu_(),
+      pauseMenu_(),
+      settingsMenu_(),
+      resultMenu_(),
+      hud_(),
       playerOne_(),
       playerTwo_(),
       base_(),
@@ -101,11 +110,31 @@ Game::Game()
       localInput_(),
       remoteInput_(),
       hasTwoPlayers_(false),
-      status_(GameStatus::Running)
+      currentConfig_(),
+      status_(GameStatus::MainMenu)
 {
     window_.setFramerateLimit(60);
+    playSetupMenu_.setTitle("Single Player","Configure map and enemy AI difficulty");
+    hostSetupMenu_.setTitle("Host Multiplayer","Choose a cooperative map and AI difficulty");
+}
 
-    const bool mapLoaded=map_.loadFromFile("assets/maps/single/hard_ai_test.txt");
+void Game::initializeWorld(const GameStartConfig& config)
+{
+    currentConfig_=config;
+    map_.clear();
+    playerOne_.reset();
+    playerTwo_.reset();
+    base_.reset();
+    enemies_.clear();
+    enemyAis_.clear();
+    bullets_.clear();
+    items_.clear();
+    localInput_={};
+    remoteInput_={};
+    hasTwoPlayers_=false;
+    itemSpawner_.reset();
+
+    const bool mapLoaded=map_.loadFromFile(config.mapPath);
 
     sf::Vector2f playerPosition(400.f,500.f);
     if(mapLoaded && map_.hasPlayerSpawn()) playerPosition=map_.playerSpawn();
@@ -119,9 +148,17 @@ Game::Game()
     {
         for(const EnemySpawn& spawn:map_.enemySpawns())
         {
-            addEnemy(spawn.position.x,spawn.position.y,spawn.type);
+            addEnemy(
+                spawn.position.x,
+                spawn.position.y,
+                spawn.type,
+                config.aiDifficulty
+            );
         }
     }
+
+    status_=GameStatus::Running;
+    window_.setTitle("Retro Tank Battle");
 }
 
 void Game::startHost(unsigned short port)
@@ -150,12 +187,102 @@ void Game::run() {
     }
 }
 
-void Game::processEvents() {
-    while (const std::optional event = window_.pollEvent()) {
-        if (event->is<sf::Event::Closed>()) {
+void Game::processEvents()
+{
+    while(const std::optional event=window_.pollEvent())
+    {
+        if(event->is<sf::Event::Closed>())
+        {
             window_.close();
+            continue;
+        }
+
+        if(status_==GameStatus::MainMenu)
+            handleMenuAction(mainMenu_.handleEvent(*event).action);
+        else if(status_==GameStatus::PlaySetup)
+            handleMenuAction(playSetupMenu_.handleEvent(*event).action);
+        else if(status_==GameStatus::HostSetup)
+            handleMenuAction(hostSetupMenu_.handleEvent(*event).action);
+        else if(status_==GameStatus::JoinSetup)
+            handleMenuAction(joinMenu_.handleEvent(*event).action);
+        else if(status_==GameStatus::Settings)
+            handleMenuAction(settingsMenu_.handleEvent(*event).action);
+        else if(status_==GameStatus::Paused)
+            handleMenuAction(pauseMenu_.handleEvent(*event).action);
+        else if(status_==GameStatus::Victory || status_==GameStatus::Defeat)
+            handleMenuAction(resultMenu_.handleEvent(*event).action);
+        else if(status_==GameStatus::Running)
+        {
+            if(const auto* keyPressed=event->getIf<sf::Event::KeyPressed>())
+            {
+                if(keyPressed->code==sf::Keyboard::Key::Escape &&
+                   networkSession_.isOffline())
+                {
+                    status_=GameStatus::Paused;
+                }
+            }
         }
     }
+}
+
+void Game::handleMenuAction(MenuAction action)
+{
+    if(action==MenuAction::None)
+        return;
+
+    if(action==MenuAction::Play)
+        status_=GameStatus::PlaySetup;
+    else if(action==MenuAction::HostMultiplayer)
+        status_=GameStatus::HostSetup;
+    else if(action==MenuAction::JoinMultiplayer)
+        status_=GameStatus::JoinSetup;
+    else if(action==MenuAction::OpenSettings)
+    {
+        if(status_==GameStatus::Paused)
+            settingsMenu_.setReturnTarget(SettingsReturnTarget::PauseMenu);
+        else
+            settingsMenu_.setReturnTarget(SettingsReturnTarget::MainMenu);
+        status_=GameStatus::Settings;
+    }
+    else if(action==MenuAction::Exit)
+        window_.close();
+    else if(action==MenuAction::StartGame && status_==GameStatus::HostSetup)
+    {
+        initializeWorld(hostSetupMenu_.config());
+        startHost(54118);
+    }
+    else if(action==MenuAction::StartGame)
+        initializeWorld(playSetupMenu_.config());
+    else if(action==MenuAction::StartHostGame)
+    {
+        initializeWorld(hostSetupMenu_.config());
+        startHost(54118);
+    }
+    else if(action==MenuAction::JoinSelectedHost)
+    {
+        initializeWorld(hostSetupMenu_.config());
+        joinHost(joinMenu_.selectedAddress(),54118);
+    }
+    else if(action==MenuAction::Back)
+    {
+        if(status_==GameStatus::PlaySetup ||
+           status_==GameStatus::HostSetup ||
+           status_==GameStatus::JoinSetup)
+            status_=GameStatus::MainMenu;
+        else if(status_==GameStatus::Settings)
+        {
+            if(settingsMenu_.returnTarget()==SettingsReturnTarget::PauseMenu)
+                status_=GameStatus::Paused;
+            else
+                status_=GameStatus::MainMenu;
+        }
+    }
+    else if(action==MenuAction::ContinueGame)
+        status_=GameStatus::Running;
+    else if(action==MenuAction::RestartGame)
+        initializeWorld(currentConfig_);
+    else if(action==MenuAction::QuitToMainMenu)
+        status_=GameStatus::MainMenu;
 }
 
 void Game::update(float deltaTime)
@@ -286,7 +413,10 @@ void Game::updateHost(float deltaTime)
     if(networkSession_.isConnected() && !hasTwoPlayers_)
     {
         sf::Vector2f position=playerOne_->getPosition();
-        position.x-=60.f;
+        if(map_.hasSecondPlayerSpawn())
+            position=map_.secondPlayerSpawn();
+        else
+            position.x-=60.f;
         playerTwo_.emplace(position.x,position.y);
         playerTwo_->setColor(sf::Color::Cyan);
         hasTwoPlayers_=true;
@@ -484,7 +614,12 @@ void Game::applySnapshot(const GameSnapshot& snapshot)
     enemyAis_.clear();
     for(const auto& enemySnapshot:snapshot.enemies)
     {
-        addEnemy(enemySnapshot.x,enemySnapshot.y,EnemyType::Light);
+        addEnemy(
+            enemySnapshot.x,
+            enemySnapshot.y,
+            EnemyType::Light,
+            currentConfig_.aiDifficulty
+        );
         enemies_.back().setDirection(static_cast<Direction>(enemySnapshot.direction));
         enemies_.back().setHp(enemySnapshot.hp);
     }
@@ -585,11 +720,16 @@ GameSnapshot Game::createSnapshot() const
     return snapshot;
 }
 
-void Game::addEnemy(float x,float y,EnemyType type)
+void Game::addEnemy(float x,float y,EnemyType type,AIDifficulty difficulty)
 {
     enemies_.emplace_back(x,y,type);
     const std::uint32_t seed=static_cast<std::uint32_t>(enemies_.back().getId()*9973+enemyAis_.size()+1);
-    enemyAis_.push_back(std::make_unique<HardAI>(seed));
+    if(difficulty==AIDifficulty::Easy)
+        enemyAis_.push_back(std::make_unique<EasyAI>(seed));
+    else if(difficulty==AIDifficulty::Normal)
+        enemyAis_.push_back(std::make_unique<NormalAI>(seed));
+    else
+        enemyAis_.push_back(std::make_unique<HardAI>(seed));
 }
 
 void Game::removeDeadEnemies()
@@ -610,8 +750,45 @@ void Game::removeDeadEnemies()
         enemyAis_.pop_back();
 }
 
-void Game::render() {
+void Game::render()
+{
     window_.clear(sf::Color::Black);
+
+    if(status_==GameStatus::MainMenu)
+    {
+        mainMenu_.draw(window_);
+        window_.display();
+        return;
+    }
+
+    if(status_==GameStatus::PlaySetup)
+    {
+        playSetupMenu_.draw(window_);
+        window_.display();
+        return;
+    }
+
+    if(status_==GameStatus::HostSetup)
+    {
+        hostSetupMenu_.draw(window_);
+        window_.display();
+        return;
+    }
+
+    if(status_==GameStatus::JoinSetup)
+    {
+        joinMenu_.draw(window_);
+        window_.display();
+        return;
+    }
+
+    if(status_==GameStatus::Settings &&
+       settingsMenu_.returnTarget()==SettingsReturnTarget::MainMenu)
+    {
+        settingsMenu_.draw(window_);
+        window_.display();
+        return;
+    }
 
     map_.drawLayer(window_,0);
     if(base_) base_->draw(window_);
@@ -630,6 +807,23 @@ void Game::render() {
     }
 
     map_.drawLayer(window_,1);
+
+    hud_.draw(
+        window_,
+        playerOne_ ? &*playerOne_ : nullptr,
+        playerTwo_ ? &*playerTwo_ : nullptr,
+        networkSession_.mode()
+    );
+
+    if(status_==GameStatus::Paused)
+        pauseMenu_.draw(window_);
+    else if(status_==GameStatus::Settings)
+        settingsMenu_.draw(window_);
+    else if(status_==GameStatus::Victory || status_==GameStatus::Defeat)
+    {
+        resultMenu_.setResult(status_);
+        resultMenu_.draw(window_);
+    }
 
     window_.display();
 }
