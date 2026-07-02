@@ -121,4 +121,28 @@ if(TANK_BATTLE_BUILD_TESTS)
         SFML::Audio
         SFML::Network
     )
+
+    add_executable(TankBattleNetworkTest
+        include/network/network_message.hpp
+        include/network/network_session.hpp
+        include/network/network_types.hpp
+        tests/network_test.cpp
+        src/network/network_message.cpp
+        src/network/network_session.cpp
+    )
+
+    target_include_directories(TankBattleNetworkTest PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    )
+
+    target_compile_options(TankBattleNetworkTest PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+    )
+
+    target_link_libraries(TankBattleNetworkTest PRIVATE
+        SFML::Network
+        SFML::System
+    )
 endif()

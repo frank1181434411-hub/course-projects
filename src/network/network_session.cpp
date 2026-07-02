@@ -48,7 +48,16 @@ bool NetworkSession::connectToHost(const std::string& address, unsigned short po
         setState(NetworkState::Failed);
         return false;
     }
-    sf::Socket::Status status = socket_.connect(addresses->front(), port, sf::seconds(5.f));
+    socket_.setBlocking(true);
+    sf::Socket::Status status=sf::Socket::Status::Error;
+    for(const auto& resolvedAddress:*addresses)
+    {
+        status=socket_.connect(resolvedAddress,port,sf::seconds(5.f));
+        if(status==sf::Socket::Status::Done)
+            break;
+        socket_.disconnect();
+    }
+    socket_.setBlocking(false);
 
     if (status != sf::Socket::Status::Done) {
         std::cerr << "[Net] Connect failed!" << std::endl;
