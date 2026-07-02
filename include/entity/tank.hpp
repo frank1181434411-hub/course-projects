@@ -12,7 +12,7 @@ public:
     virtual ~Tank() = default;
 
     virtual void update(float deltaTime, std::vector<Bullet>& bullets) = 0;
-    void draw(sf::RenderWindow& window) const;
+    virtual void draw(sf::RenderWindow& window) const;
     void takeDamage(int damage);
     bool heal(int amount);
 

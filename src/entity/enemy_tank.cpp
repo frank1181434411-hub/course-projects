@@ -1,4 +1,5 @@
 #include "entity/enemy_tank.hpp"
+#include "core/resource_manager.hpp"
 #include "world/collision.hpp"
 
 namespace {
@@ -27,6 +28,18 @@ float enemyCooldown(EnemyType type) {
 
 float enemyBulletSpeed(EnemyType type) {
     return type == EnemyType::Light ? prototype::LightEnemyBulletSpeed : prototype::HeavyEnemyBulletSpeed;
+}
+
+sf::Angle rotationFor(Direction direction)
+{
+    if(direction==Direction::Down)
+        return sf::degrees(180.f);
+    if(direction==Direction::Left)
+        return sf::degrees(270.f);
+    if(direction==Direction::Right)
+        return sf::degrees(90.f);
+
+    return sf::degrees(0.f);
 }
 }
 
@@ -92,6 +105,27 @@ void EnemyTank::update(float deltaTime,std::vector<Bullet>& bullets,const Map& m
     }
 
     updateTurretRotation();
+}
+
+void EnemyTank::draw(sf::RenderWindow& window) const
+{
+    if(!isAlive())
+        return;
+
+    const sf::Texture* texture=ResourceManager::instance().enemyTexture(type_);
+    if(texture==nullptr)
+    {
+        Tank::draw(window);
+        return;
+    }
+
+    sf::Sprite sprite(*texture);
+    const sf::Vector2u size=texture->getSize();
+    sprite.setOrigin({static_cast<float>(size.x)*0.5f,static_cast<float>(size.y)*0.5f});
+    sprite.setPosition(position_);
+    sprite.setRotation(rotationFor(dir_));
+    sprite.setScale({32.f/static_cast<float>(size.x),32.f/static_cast<float>(size.y)});
+    window.draw(sprite);
 }
 
 void EnemyTank::setMoveDirection(Direction dir) {

@@ -1,5 +1,6 @@
 #include "core/game.hpp"
 #include "ai/enemy_ai.hpp"
+#include "core/resource_manager.hpp"
 #include "world/collision.hpp"
 #include "ui/ui_common.hpp"
 
@@ -83,7 +84,14 @@ void applyTankCommand(EnemyTank& enemy,const TankCommand& command,std::vector<Bu
     }
 
     if(command.fire)
+    {
         enemy.tryFire(bullets);
+    }
+}
+
+void playUiSound(const UIEventResult& result)
+{
+    ResourceManager::instance().playUiSound(result.sound);
 }
 }
 
@@ -202,6 +210,7 @@ void Game::run() {
             joinMenu_.setHosts(hostDiscovery_.hosts());
         networkSession_.update();
         update(deltaTime);
+        ResourceManager::instance().update();
         render();
     }
 }
@@ -217,19 +226,48 @@ void Game::processEvents()
         }
 
         if(status_==GameStatus::MainMenu)
-            handleMenuAction(mainMenu_.handleEvent(*event).action);
+        {
+            const UIEventResult result=mainMenu_.handleEvent(*event);
+            playUiSound(result);
+            handleMenuAction(result.action);
+        }
         else if(status_==GameStatus::PlaySetup)
-            handleMenuAction(playSetupMenu_.handleEvent(*event).action);
+        {
+            const UIEventResult result=playSetupMenu_.handleEvent(*event);
+            playUiSound(result);
+            handleMenuAction(result.action);
+        }
         else if(status_==GameStatus::HostSetup)
-            handleMenuAction(hostSetupMenu_.handleEvent(*event).action);
+        {
+            const UIEventResult result=hostSetupMenu_.handleEvent(*event);
+            playUiSound(result);
+            handleMenuAction(result.action);
+        }
         else if(status_==GameStatus::JoinSetup)
-            handleMenuAction(joinMenu_.handleEvent(*event).action);
+        {
+            const UIEventResult result=joinMenu_.handleEvent(*event);
+            playUiSound(result);
+            handleMenuAction(result.action);
+        }
         else if(status_==GameStatus::Settings)
-            handleMenuAction(settingsMenu_.handleEvent(*event).action);
+        {
+            const UIEventResult result=settingsMenu_.handleEvent(*event);
+            ResourceManager::instance().setVolume(settingsMenu_.volume());
+            playUiSound(result);
+            handleMenuAction(result.action);
+        }
         else if(status_==GameStatus::Paused)
-            handleMenuAction(pauseMenu_.handleEvent(*event).action);
+        {
+            const UIEventResult result=pauseMenu_.handleEvent(*event);
+            playUiSound(result);
+            handleMenuAction(result.action);
+        }
         else if(status_==GameStatus::Victory || status_==GameStatus::Defeat)
-            handleMenuAction(resultMenu_.handleEvent(*event).action);
+        {
+            const UIEventResult result=resultMenu_.handleEvent(*event);
+            playUiSound(result);
+            handleMenuAction(result.action);
+        }
         else if(status_==GameStatus::Running)
         {
             if(const auto* keyPressed=event->getIf<sf::Event::KeyPressed>())
@@ -237,6 +275,7 @@ void Game::processEvents()
                 if(keyPressed->code==sf::Keyboard::Key::Escape &&
                    networkSession_.isOffline())
                 {
+                    ResourceManager::instance().playSound(SoundId::PauseOpen);
                     status_=GameStatus::Paused;
                 }
             }
@@ -361,7 +400,10 @@ void Game::handleMenuAction(MenuAction action)
         }
     }
     else if(action==MenuAction::ContinueGame)
+    {
+        ResourceManager::instance().playSound(SoundId::PauseClose);
         status_=GameStatus::Running;
+    }
     else if(action==MenuAction::RestartGame)
         initializeWorld(currentConfig_);
     else if(action==MenuAction::QuitToMainMenu)
@@ -429,7 +471,15 @@ void Game::updateOffline(float deltaTime)
 
     for (auto& item : items_) {
         if (item.isAlive() && playerOne_->getBounds().findIntersection(item.getBounds()).has_value()) {
+            const ItemType itemType=item.getType();
             playerOne_->collectItem(item);
+            if(!item.isAlive())
+            {
+                if(itemType==ItemType::HealthPack)
+                    ResourceManager::instance().playSound(SoundId::ItemPickHealth);
+                else
+                    ResourceManager::instance().playSound(SoundId::ItemPickPower);
+            }
         }
     }
 
@@ -446,7 +496,10 @@ void Game::updateOffline(float deltaTime)
             {
                 map_.setTile(hitTileX,hitTileY,TileType::Empty);
                 destroyedBricks_.insert({hitTileX,hitTileY});
+                ResourceManager::instance().playSound(SoundId::BulletHitBrick);
             }
+            else if(tile!=nullptr && tile->type()==TileType::Steel)
+                ResourceManager::instance().playSound(SoundId::BulletHitSteel);
             hit=true;
         }
         else if(Collision::hitsMapBounds(map_,bullet->getBounds()))
@@ -455,17 +508,32 @@ void Game::updateOffline(float deltaTime)
         if (!hit && bullet->getFaction() == Faction::Player) {
             for (auto& enemy : enemies_) {
                 if (enemy.isAlive() && bullet->getBounds().findIntersection(enemy.getBounds()).has_value()) {
+                    const bool wasAlive=enemy.isAlive();
                     enemy.takeDamage(bullet->getDamage());
+                    if(wasAlive && !enemy.isAlive())
+                        ResourceManager::instance().playSound(SoundId::TankDestroy);
+                    else
+                        ResourceManager::instance().playSound(SoundId::TankHit);
                     hit = true;
                     break;
                 }
             }
         } else if (!hit && bullet->getFaction() == Faction::Enemy) {
-            if (playerOne_->isAlive() && bullet->getBounds().findIntersection(playerOne_->getBounds()).has_value()) {
+                if (playerOne_->isAlive() && bullet->getBounds().findIntersection(playerOne_->getBounds()).has_value()) {
+                const bool wasAlive=playerOne_->isAlive();
                 playerOne_->takeDamage(bullet->getDamage());
+                if(wasAlive && !playerOne_->isAlive())
+                    ResourceManager::instance().playSound(SoundId::TankDestroy);
+                else
+                    ResourceManager::instance().playSound(SoundId::TankHit);
                 hit = true;
             } else if (base_->isAlive() && bullet->getBounds().findIntersection(base_->getBounds()).has_value()) {
+                const bool wasAlive=base_->isAlive();
                 base_->takeDamage(bullet->getDamage());
+                if(wasAlive && !base_->isAlive())
+                    ResourceManager::instance().playSound(SoundId::BaseDestroy);
+                else
+                    ResourceManager::instance().playSound(SoundId::BaseHit);
                 hit = true;
             }
         }
@@ -592,11 +660,29 @@ void Game::updateHost(float deltaTime)
         bool picked=false;
         if(playerOne_->isAlive() && playerOne_->getBounds().findIntersection(item.getBounds()).has_value())
         {
+            const ItemType itemType=item.getType();
             playerOne_->collectItem(item);
+            if(!item.isAlive())
+            {
+                if(itemType==ItemType::HealthPack)
+                    ResourceManager::instance().playSound(SoundId::ItemPickHealth);
+                else
+                    ResourceManager::instance().playSound(SoundId::ItemPickPower);
+            }
             picked=true;
         }
         if(!picked && playerTwo_ && playerTwo_->isAlive() && playerTwo_->getBounds().findIntersection(item.getBounds()).has_value())
+        {
+            const ItemType itemType=item.getType();
             playerTwo_->collectItem(item);
+            if(!item.isAlive())
+            {
+                if(itemType==ItemType::HealthPack)
+                    ResourceManager::instance().playSound(SoundId::ItemPickHealth);
+                else
+                    ResourceManager::instance().playSound(SoundId::ItemPickPower);
+            }
+        }
     }
 
     for(auto bullet=bullets_.begin();bullet!=bullets_.end();)
@@ -614,7 +700,10 @@ void Game::updateHost(float deltaTime)
                 map_.setTile(hitTileX,hitTileY,TileType::Empty);
                 destroyedBricks_.insert({hitTileX,hitTileY});
                 networkSession_.sendTileChanged(hitTileX,hitTileY,static_cast<int>(TileType::Empty));
+                ResourceManager::instance().playSound(SoundId::BulletHitBrick);
             }
+            else if(tile!=nullptr && tile->type()==TileType::Steel)
+                ResourceManager::instance().playSound(SoundId::BulletHitSteel);
             hit=true;
         }
         else if(Collision::hitsMapBounds(map_,bullet->getBounds()))
@@ -626,7 +715,12 @@ void Game::updateHost(float deltaTime)
             {
                 if(enemy.isAlive() && bullet->getBounds().findIntersection(enemy.getBounds()).has_value())
                 {
+                    const bool wasAlive=enemy.isAlive();
                     enemy.takeDamage(bullet->getDamage());
+                    if(wasAlive && !enemy.isAlive())
+                        ResourceManager::instance().playSound(SoundId::TankDestroy);
+                    else
+                        ResourceManager::instance().playSound(SoundId::TankHit);
                     hit=true;
                     break;
                 }
@@ -636,17 +730,32 @@ void Game::updateHost(float deltaTime)
         {
             if(playerOne_->isAlive() && bullet->getBounds().findIntersection(playerOne_->getBounds()).has_value())
             {
+                const bool wasAlive=playerOne_->isAlive();
                 playerOne_->takeDamage(bullet->getDamage());
+                if(wasAlive && !playerOne_->isAlive())
+                    ResourceManager::instance().playSound(SoundId::TankDestroy);
+                else
+                    ResourceManager::instance().playSound(SoundId::TankHit);
                 hit=true;
             }
             else if(playerTwo_ && playerTwo_->isAlive() && bullet->getBounds().findIntersection(playerTwo_->getBounds()).has_value())
             {
+                const bool wasAlive=playerTwo_->isAlive();
                 playerTwo_->takeDamage(bullet->getDamage());
+                if(wasAlive && !playerTwo_->isAlive())
+                    ResourceManager::instance().playSound(SoundId::TankDestroy);
+                else
+                    ResourceManager::instance().playSound(SoundId::TankHit);
                 hit=true;
             }
             else if(base_->isAlive() && bullet->getBounds().findIntersection(base_->getBounds()).has_value())
             {
+                const bool wasAlive=base_->isAlive();
                 base_->takeDamage(bullet->getDamage());
+                if(wasAlive && !base_->isAlive())
+                    ResourceManager::instance().playSound(SoundId::BaseDestroy);
+                else
+                    ResourceManager::instance().playSound(SoundId::BaseHit);
                 hit=true;
             }
         }
@@ -987,8 +1096,10 @@ void Game::updateStatus() {
     if (!base_->isAlive() || playersDefeated) {
         status_ = GameStatus::Defeat;
         window_.setTitle("Retro Tank Battle - Defeat");
+        ResourceManager::instance().playSound(SoundId::Defeat);
     } else if (enemies_.empty()) {
         status_ = GameStatus::Victory;
         window_.setTitle("Retro Tank Battle - Victory");
+        ResourceManager::instance().playSound(SoundId::Victory);
     }
 }

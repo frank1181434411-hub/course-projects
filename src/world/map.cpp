@@ -1,4 +1,5 @@
 #include "world/map.hpp"
+#include "core/resource_manager.hpp"
 #include <fstream>
 
 namespace
@@ -187,9 +188,21 @@ void Map::drawLayer(sf::RenderWindow& window,int layer) const
             if(tile==nullptr || !tile->isDrawable()) continue;
             if(tile->drawLayer()!=layer) continue;
 
-            shape.setPosition(tilePosition(x,y));
-            shape.setFillColor(tile->color());
-            window.draw(shape);
+            const sf::Texture* texture=ResourceManager::instance().tileTexture(tile->type());
+            if(texture!=nullptr)
+            {
+                sf::Sprite sprite(*texture);
+                const sf::Vector2u size=texture->getSize();
+                sprite.setPosition(tilePosition(x,y));
+                sprite.setScale({Tile::DefaultSize/static_cast<float>(size.x),Tile::DefaultSize/static_cast<float>(size.y)});
+                window.draw(sprite);
+            }
+            else
+            {
+                shape.setPosition(tilePosition(x,y));
+                shape.setFillColor(tile->color());
+                window.draw(shape);
+            }
         }
     }
 }

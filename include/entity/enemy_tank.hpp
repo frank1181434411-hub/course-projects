@@ -10,6 +10,7 @@ public:
     EnemyTank(float x, float y, EnemyType type);
 
     void update(float deltaTime, std::vector<Bullet>& bullets) override;
+    void draw(sf::RenderWindow& window) const override;
     void update(float deltaTime,std::vector<Bullet>& bullets,const Map& map,const std::vector<sf::FloatRect>& tankBlocks);
     void setMoveDirection(Direction dir);
     void stopMoving();
