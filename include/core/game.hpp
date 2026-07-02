@@ -14,6 +14,7 @@
 #include "entity/enemy_tank.hpp"
 #include "entity/item.hpp"
 #include "entity/player_tank.hpp"
+#include "network/host_discovery.hpp"
 #include "network/network_session.hpp"
 #include "ui/hud.hpp"
 #include "ui/join_menu.hpp"
@@ -53,6 +54,7 @@ private:
     Map map_;
     ItemSpawner itemSpawner_;
     NetworkSession networkSession_;
+    HostDiscovery hostDiscovery_;
     MainMenu mainMenu_;
     PlaySetupMenu playSetupMenu_;
     PlaySetupMenu hostSetupMenu_;

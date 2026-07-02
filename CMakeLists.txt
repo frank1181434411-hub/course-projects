@@ -29,6 +29,7 @@ add_executable(TankBattle
     include/ai/enemy_ai.hpp
     include/ai/tank_command.hpp
     include/core/game_status.hpp
+    include/network/host_discovery.hpp
     include/network/network_message.hpp
     include/network/network_session.hpp
     include/network/network_types.hpp
@@ -52,6 +53,7 @@ add_executable(TankBattle
     src/entity/item.cpp
     src/entity/player_tank.cpp
     src/entity/tank.cpp
+    src/network/host_discovery.cpp
     src/network/network_message.cpp
     src/network/network_session.cpp
     src/ui/hud.cpp

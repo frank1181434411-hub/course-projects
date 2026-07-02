@@ -92,6 +92,7 @@ Game::Game()
       map_(),
       itemSpawner_(map_),
       networkSession_(),
+      hostDiscovery_(),
       mainMenu_(),
       playSetupMenu_(),
       hostSetupMenu_("assets/maps/coop"),
@@ -163,17 +164,21 @@ void Game::initializeWorld(const GameStartConfig& config)
 
 void Game::startHost(unsigned short port)
 {
-    networkSession_.startHost(port);
+    if(networkSession_.startHost(port))
+        hostDiscovery_.beginAdvertising(port);
 }
 
 void Game::joinHost(const std::string& address,unsigned short port)
 {
-    networkSession_.connectToHost(address,port);
+    if(port!=0)
+        networkSession_.connectToHost(address,port);
 }
 
 void Game::leaveNetworkGame()
 {
     networkSession_.disconnect();
+    hostDiscovery_.stopAdvertising();
+    hostDiscovery_.stopListening();
 }
 
 void Game::run() {
@@ -181,6 +186,9 @@ void Game::run() {
     while (window_.isOpen()) {
         const float deltaTime = clock.restart().asSeconds();
         processEvents();
+        hostDiscovery_.update(deltaTime);
+        if(status_==GameStatus::JoinSetup)
+            joinMenu_.setHosts(hostDiscovery_.hosts());
         networkSession_.update();
         update(deltaTime);
         render();
@@ -235,7 +243,10 @@ void Game::handleMenuAction(MenuAction action)
     else if(action==MenuAction::HostMultiplayer)
         status_=GameStatus::HostSetup;
     else if(action==MenuAction::JoinMultiplayer)
+    {
+        hostDiscovery_.beginListening();
         status_=GameStatus::JoinSetup;
+    }
     else if(action==MenuAction::OpenSettings)
     {
         if(status_==GameStatus::Paused)
@@ -261,14 +272,19 @@ void Game::handleMenuAction(MenuAction action)
     else if(action==MenuAction::JoinSelectedHost)
     {
         initializeWorld(hostSetupMenu_.config());
-        joinHost(joinMenu_.selectedAddress(),54118);
+        hostDiscovery_.stopListening();
+        joinHost(joinMenu_.selectedAddress(),joinMenu_.selectedPort());
     }
     else if(action==MenuAction::Back)
     {
         if(status_==GameStatus::PlaySetup ||
            status_==GameStatus::HostSetup ||
            status_==GameStatus::JoinSetup)
+        {
+            if(status_==GameStatus::JoinSetup)
+                hostDiscovery_.stopListening();
             status_=GameStatus::MainMenu;
+        }
         else if(status_==GameStatus::Settings)
         {
             if(settingsMenu_.returnTarget()==SettingsReturnTarget::PauseMenu)
@@ -282,7 +298,10 @@ void Game::handleMenuAction(MenuAction action)
     else if(action==MenuAction::RestartGame)
         initializeWorld(currentConfig_);
     else if(action==MenuAction::QuitToMainMenu)
+    {
+        leaveNetworkGame();
         status_=GameStatus::MainMenu;
+    }
 }
 
 void Game::update(float deltaTime)
