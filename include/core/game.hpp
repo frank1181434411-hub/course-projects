@@ -14,6 +14,7 @@
 #include "entity/item.hpp"
 #include "entity/player_tank.hpp"
 #include "network/network_session.hpp"
+#include "world/item_spawner.hpp"
 #include "world/map.hpp"
 
 enum class GameStatus {
@@ -46,6 +47,7 @@ private:
 
     sf::RenderWindow window_;
     Map map_;
+    ItemSpawner itemSpawner_;
     NetworkSession networkSession_;
     std::optional<PlayerTank> playerOne_;
     std::optional<PlayerTank> playerTwo_;

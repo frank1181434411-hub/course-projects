@@ -31,6 +31,7 @@ add_executable(TankBattle
     include/network/network_message.hpp
     include/network/network_session.hpp
     include/network/network_types.hpp
+    include/world/item_spawner.hpp
     src/main.cpp
     src/ai/enemy_ai.cpp
     src/core/game.cpp
@@ -44,6 +45,7 @@ add_executable(TankBattle
     src/network/network_message.cpp
     src/network/network_session.cpp
     src/world/collision.cpp
+    src/world/item_spawner.cpp
     src/world/map.cpp
     src/world/tile.cpp
 )

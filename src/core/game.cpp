@@ -38,6 +38,32 @@ void addAliveEnemyBlocks(std::vector<sf::FloatRect>& blocks,const std::vector<En
     }
 }
 
+void addAlivePlayerBlock(std::vector<sf::FloatRect>& blocks,const std::optional<PlayerTank>& player)
+{
+    if(player && player->isAlive())
+        blocks.push_back(player->getBounds());
+}
+
+void addAliveBaseBlock(std::vector<sf::FloatRect>& blocks,const std::optional<Base>& base)
+{
+    if(base && base->isAlive())
+        blocks.push_back(base->getBounds());
+}
+
+void addItemOccupiedBlocks(
+    std::vector<sf::FloatRect>& blocks,
+    const std::optional<PlayerTank>& playerOne,
+    const std::optional<PlayerTank>& playerTwo,
+    const std::optional<Base>& base,
+    const std::vector<EnemyTank>& enemies
+)
+{
+    addAlivePlayerBlock(blocks,playerOne);
+    addAlivePlayerBlock(blocks,playerTwo);
+    addAliveBaseBlock(blocks,base);
+    addAliveEnemyBlocks(blocks,enemies);
+}
+
 void updatePlayerByInput(PlayerTank& player,float deltaTime,std::vector<Bullet>& bullets,const Map& map,const std::vector<sf::FloatRect>& blocks,const PlayerInputState& input)
 {
     player.updateWithInput(deltaTime,bullets,map,blocks,input.moveUp,input.moveDown,input.moveLeft,input.moveRight,input.fire);
@@ -61,8 +87,9 @@ void applyTankCommand(EnemyTank& enemy,const TankCommand& command,std::vector<Bu
 Game::Game()
     : window_(sf::VideoMode({static_cast<unsigned int>(prototype::WindowWidth),
                              static_cast<unsigned int>(prototype::WindowHeight)}),
-              "Retro Tank Battle"),
+      "Retro Tank Battle"),
       map_(),
+      itemSpawner_(map_),
       networkSession_(),
       playerOne_(),
       playerTwo_(),
@@ -73,6 +100,7 @@ Game::Game()
       items_(),
       localInput_(),
       remoteInput_(),
+      hasTwoPlayers_(false),
       status_(GameStatus::Running)
 {
     window_.setFramerateLimit(60);
@@ -86,9 +114,6 @@ Game::Game()
     sf::Vector2f basePosition(400.f,550.f);
     if(mapLoaded && map_.hasBasePosition()) basePosition=map_.basePosition();
     base_.emplace(basePosition.x,basePosition.y);
-
-    items_.emplace_back(sf::Vector2f{300.f, 300.f}, ItemType::HealthPack);
-    items_.emplace_back(sf::Vector2f{400.f, 300.f}, ItemType::DamagePack);
 
     if(mapLoaded)
     {
@@ -178,6 +203,16 @@ void Game::updateOffline(float deltaTime)
         applyTankCommand(enemy,command,bullets_);
         enemy.update(deltaTime,bullets_,map_,enemyTankBlocks);
     }
+
+    std::vector<sf::FloatRect> itemOccupiedBlocks;
+    addItemOccupiedBlocks(
+        itemOccupiedBlocks,
+        playerOne_,
+        playerTwo_,
+        base_,
+        enemies_
+    );
+    itemSpawner_.update(deltaTime,items_,itemOccupiedBlocks);
 
     for (auto& item : items_) {
         if (item.isAlive() && playerOne_->getBounds().findIntersection(item.getBounds()).has_value()) {
@@ -302,6 +337,16 @@ void Game::updateHost(float deltaTime)
         applyTankCommand(enemy,command,bullets_);
         enemy.update(deltaTime,bullets_,map_,enemyTankBlocks);
     }
+
+    std::vector<sf::FloatRect> itemOccupiedBlocks;
+    addItemOccupiedBlocks(
+        itemOccupiedBlocks,
+        playerOne_,
+        playerTwo_,
+        base_,
+        enemies_
+    );
+    itemSpawner_.update(deltaTime,items_,itemOccupiedBlocks);
 
     for(auto& item:items_)
     {
