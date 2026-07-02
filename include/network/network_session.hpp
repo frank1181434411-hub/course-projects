@@ -39,6 +39,13 @@ public:
     std::string getRemoteAddress() const;
 
 private:
+    struct TileChange
+    {
+        int x=0;
+        int y=0;
+        int tileType=0;
+    };
+
     void setState(NetworkState);
     void updateHost();
     void updateClient();
@@ -54,8 +61,7 @@ private:
 
     std::optional<PlayerInputState> pendingRemoteInput_;
     std::optional<GameSnapshot> pendingSnapshot_;
-    std::optional<std::pair<int, int>> pendingTileChange_;
-    std::optional<int> pendingTileType_;
+    std::queue<TileChange> pendingTileChanges_;
     bool pendingWelcome_ = false;
     bool isHostConnected_ = false;
 

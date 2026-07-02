@@ -84,8 +84,8 @@ void NetworkSession::disconnect() {
     isHostConnected_ = false;
     pendingRemoteInput_.reset();
     pendingSnapshot_.reset();
-    pendingTileChange_.reset();
-    pendingTileType_.reset();
+    while(!pendingTileChanges_.empty())
+        pendingTileChanges_.pop();
     pendingWelcome_ = false;
     std::cout << "[Net] Disconnected" << std::endl;
 }

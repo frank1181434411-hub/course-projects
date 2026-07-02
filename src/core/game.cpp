@@ -491,24 +491,41 @@ void Game::updateOffline(float deltaTime)
 
 void Game::updateHost(float deltaTime)
 {
+    
     if(status_!=GameStatus::Running || !playerOne_ || !base_)
         return;
 
-    PlayerInputState remoteInput;
-    if(networkSession_.pollRemoteInput(remoteInput))
-        remoteInput_=remoteInput;
-
-    if(networkSession_.isConnected() && !hasTwoPlayers_)
+    if(!hasTwoPlayers_)
     {
+        localInput_={};
+        remoteInput_={};
+
+        if(!networkSession_.pollWelcome())
+            return;
+
         sf::Vector2f position=playerOne_->getPosition();
+
         if(map_.hasSecondPlayerSpawn())
             position=map_.secondPlayerSpawn();
         else
             position.x-=60.f;
+
         playerTwo_.emplace(position.x,position.y);
         playerTwo_->setColor(sf::Color::Cyan);
+
         hasTwoPlayers_=true;
+
+        hostDiscovery_.stopAdvertising();
+
+        networkSession_.sendSnapshot(createSnapshot());
+
+        return;
     }
+
+PlayerInputState remoteInput;
+
+if(networkSession_.pollRemoteInput(remoteInput))
+    remoteInput_=remoteInput;
 
     std::vector<sf::FloatRect> playerOneBlocks;
     if(base_->isAlive())

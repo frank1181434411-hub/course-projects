@@ -60,4 +60,37 @@ void Hud::draw(sf::RenderWindow& window, const PlayerTank* playerOne, const Play
     if (showSecond) {
         drawCard(playerTwo, "P2", {570.f, 10.f});
     }
+
+    if (mode == NetworkMode::Host && playerTwo == nullptr) {
+        const sf::Vector2u windowSize = window.getSize();
+        const sf::Vector2f screenSize{
+            static_cast<float>(windowSize.x),
+            static_cast<float>(windowSize.y)
+        };
+        const sf::Vector2f center{
+            screenSize.x / 2.f,
+            screenSize.y / 2.f
+        };
+
+        sf::RectangleShape shade(screenSize);
+        shade.setFillColor(sf::Color(0, 0, 0, 150));
+        window.draw(shade);
+
+        ui::drawPanel(
+            window,
+            {center.x - 210.f, center.y - 60.f},
+            {420.f, 120.f},
+            sf::Color(18, 24, 36, 240),
+            sf::Color(219, 178, 77),
+            2.f
+        );
+
+        ui::drawCenteredText(
+            window,
+            "Waiting for client...",
+            32,
+            center,
+            sf::Color(255, 224, 122)
+        );
+    }
 }
