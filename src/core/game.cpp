@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 #include <optional>
 
 namespace {
@@ -162,18 +163,25 @@ void Game::initializeWorld(const GameStartConfig& config)
     window_.setTitle("Retro Tank Battle");
 }
 
-void Game::startHost(unsigned short port)
+bool Game::startHost(unsigned short port)
 {
-    if(networkSession_.startHost(port))
-        hostDiscovery_.beginAdvertising(port);
+    if(port==0)
+        return false;
+
+    if(!networkSession_.startHost(port))
+        return false;
+
+    hostDiscovery_.beginAdvertising(port);
+    return true;
 }
 
-void Game::joinHost(const std::string& address,unsigned short port)
+bool Game::joinHost(const std::string& address,unsigned short port)
 {
-    if(port!=0)
-        networkSession_.connectToHost(address,port);
-}
+    if(address.empty()||port==0)
+        return false;
 
+    return networkSession_.connectToHost(address,port);
+}
 void Game::leaveNetworkGame()
 {
     networkSession_.disconnect();
@@ -253,42 +261,98 @@ void Game::handleMenuAction(MenuAction action)
             settingsMenu_.setReturnTarget(SettingsReturnTarget::PauseMenu);
         else
             settingsMenu_.setReturnTarget(SettingsReturnTarget::MainMenu);
+
         status_=GameStatus::Settings;
     }
     else if(action==MenuAction::Exit)
         window_.close();
-    else if(action==MenuAction::StartGame && status_==GameStatus::HostSetup)
+    else if(action==MenuAction::StartGame&&status_==GameStatus::HostSetup)
     {
-        initializeWorld(hostSetupMenu_.config());
-        startHost(54118);
+        constexpr unsigned short GamePort=54118;
+
+        std::cout
+            <<"[Game] Starting host on port "
+            <<GamePort
+            <<'\n';
+
+        if(startHost(GamePort))
+        {
+            initializeWorld(hostSetupMenu_.config());
+            std::cout<<"[Game] Host started successfully\n";
+        }
+        else
+        {
+            std::cerr<<"[Game] Host startup failed\n";
+            status_=GameStatus::HostSetup;
+        }
     }
     else if(action==MenuAction::StartGame)
         initializeWorld(playSetupMenu_.config());
     else if(action==MenuAction::StartHostGame)
     {
-        initializeWorld(hostSetupMenu_.config());
-        startHost(54118);
+        constexpr unsigned short GamePort=54118;
+
+        std::cout
+            <<"[Game] Starting host on port "
+            <<GamePort
+            <<'\n';
+
+        if(startHost(GamePort))
+        {
+            initializeWorld(hostSetupMenu_.config());
+            std::cout<<"[Game] Host started successfully\n";
+        }
+        else
+        {
+            std::cerr<<"[Game] Host startup failed\n";
+            status_=GameStatus::HostSetup;
+        }
     }
     else if(action==MenuAction::JoinSelectedHost)
     {
-        initializeWorld(hostSetupMenu_.config());
+        const std::string address=
+            joinMenu_.selectedAddress();
+
+        const unsigned short port=
+            joinMenu_.selectedPort();
+
+        std::cout
+            <<"[Game] Joining "
+            <<address
+            <<':'
+            <<port
+            <<'\n';
+
         hostDiscovery_.stopListening();
-        joinHost(joinMenu_.selectedAddress(),joinMenu_.selectedPort());
+
+        if(joinHost(address,port))
+        {
+            initializeWorld(hostSetupMenu_.config());
+            std::cout<<"[Game] TCP connection succeeded\n";
+        }
+        else
+        {
+            std::cerr<<"[Game] TCP connection failed\n";
+
+            hostDiscovery_.beginListening();
+            status_=GameStatus::JoinSetup;
+        }
     }
     else if(action==MenuAction::Back)
     {
-        if(status_==GameStatus::PlaySetup ||
-           status_==GameStatus::HostSetup ||
-           status_==GameStatus::JoinSetup)
+        if(status_==GameStatus::PlaySetup||status_==GameStatus::HostSetup||status_==GameStatus::JoinSetup)
         {
             if(status_==GameStatus::JoinSetup)
                 hostDiscovery_.stopListening();
+
             status_=GameStatus::MainMenu;
         }
         else if(status_==GameStatus::Settings)
         {
             if(settingsMenu_.returnTarget()==SettingsReturnTarget::PauseMenu)
+            {
                 status_=GameStatus::Paused;
+            }
             else
                 status_=GameStatus::MainMenu;
         }
@@ -585,14 +649,26 @@ void Game::updateHost(float deltaTime)
 void Game::updateClient(float)
 {
     GameSnapshot snapshot;
+
     if(networkSession_.pollSnapshot(snapshot))
         applySnapshot(snapshot);
 
     int tileX=0;
     int tileY=0;
     int tileType=0;
-    if(networkSession_.pollTileChanged(tileX,tileY,tileType))
-        map_.setTile(tileX,tileY,static_cast<TileType>(tileType));
+
+    while(networkSession_.pollTileChanged(
+        tileX,
+        tileY,
+        tileType
+    ))
+    {
+        map_.setTile(
+            tileX,
+            tileY,
+            static_cast<TileType>(tileType)
+        );
+    }
 
     networkSession_.sendInput(localInput_);
 }

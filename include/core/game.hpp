@@ -30,8 +30,8 @@ class Game {
 public:
     Game();
     void run();
-    void startHost(unsigned short port);
-    void joinHost(const std::string& address,unsigned short port);
+    bool startHost(unsigned short port);
+    bool joinHost(const std::string& address,unsigned short port);
     void leaveNetworkGame();
 
 private:
