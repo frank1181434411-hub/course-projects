@@ -1,0 +1,247 @@
+#include "entity/player_tank.hpp"
+#include "world/collision.hpp"
+
+namespace {
+bool hitsTankBlock(const sf::FloatRect& bounds,const std::vector<sf::FloatRect>& tankBlocks) noexcept
+{
+    for(const auto& block:tankBlocks)
+    {
+        if(bounds.findIntersection(block).has_value())
+            return true;
+    }
+
+    return false;
+}
+}
+
+PlayerTank::PlayerTank(float x, float y)
+    : Tank(x, y, 120.f, 100, Faction::Player, prototype::PlayerFireCooldown, prototype::PlayerBulletSpeed),
+      damageBuffTimer_(0.f)
+{
+    bodyShape_.setFillColor(sf::Color::Green);
+    turretShape_.setFillColor(sf::Color::White);
+}
+
+void PlayerTank::update(float deltaTime, std::vector<Bullet>& bullets) {
+    if (!isAlive()) {
+        return;
+    }
+
+    if (cooldownTimer_ > 0.f) {
+        cooldownTimer_ -= deltaTime;
+    }
+
+    if (damageBuffTimer_ > 0.f) {
+        damageBuffTimer_ -= deltaTime;
+        if (damageBuffTimer_ <= 0.f) {
+            currentBulletDamage_ = prototype::PlayerNormalDamage;
+            turretShape_.setFillColor(sf::Color::White);
+        }
+    }
+
+    handleMovement(deltaTime);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+        int activePlayerBullets = 0;
+        for (const auto& bullet : bullets) {
+            if (bullet.getFaction() == Faction::Player && bullet.getOwnerId() == getId()) {
+                ++activePlayerBullets;
+            }
+        }
+        if (activePlayerBullets < 3) {
+            fire(bullets);
+        }
+    }
+}
+
+void PlayerTank::update(float deltaTime,std::vector<Bullet>& bullets,const Map& map,const std::vector<sf::FloatRect>& tankBlocks)
+{
+    if(!isAlive()) return;
+
+    if(cooldownTimer_>0.f)
+        cooldownTimer_-=deltaTime;
+
+    if(damageBuffTimer_>0.f)
+    {
+        damageBuffTimer_-=deltaTime;
+        if(damageBuffTimer_<=0.f)
+        {
+            currentBulletDamage_=prototype::PlayerNormalDamage;
+            turretShape_.setFillColor(sf::Color::White);
+        }
+    }
+
+    handleMovement(deltaTime,map,tankBlocks);
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+    {
+        int activePlayerBullets=0;
+        for(const auto& bullet:bullets)
+        {
+            if(bullet.getFaction()==Faction::Player && bullet.getOwnerId()==getId())
+                ++activePlayerBullets;
+        }
+        if(activePlayerBullets<3)
+            fire(bullets);
+    }
+}
+
+void PlayerTank::updateWithInput(float deltaTime,std::vector<Bullet>& bullets,const Map& map,const std::vector<sf::FloatRect>& tankBlocks,bool moveUp,bool moveDown,bool moveLeft,bool moveRight,bool firePressed)
+{
+    if(!isAlive()) return;
+
+    if(cooldownTimer_>0.f)
+        cooldownTimer_-=deltaTime;
+
+    if(damageBuffTimer_>0.f)
+    {
+        damageBuffTimer_-=deltaTime;
+        if(damageBuffTimer_<=0.f)
+        {
+            currentBulletDamage_=prototype::PlayerNormalDamage;
+            turretShape_.setFillColor(sf::Color::White);
+        }
+    }
+
+    handleMovementWithInput(deltaTime,map,tankBlocks,moveUp,moveDown,moveLeft,moveRight);
+
+    if(firePressed)
+    {
+        int activePlayerBullets=0;
+        for(const auto& bullet:bullets)
+        {
+            if(bullet.getFaction()==Faction::Player && bullet.getOwnerId()==getId())
+                ++activePlayerBullets;
+        }
+        if(activePlayerBullets<3)
+            fire(bullets);
+    }
+}
+
+void PlayerTank::handleMovement(float deltaTime) {
+    sf::Vector2f movement(0.f, 0.f);
+    bool moved = false;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+        dir_ = Direction::Up;
+        movement.y -= speed_ * deltaTime;
+        moved = true;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+        dir_ = Direction::Down;
+        movement.y += speed_ * deltaTime;
+        moved = true;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+        dir_ = Direction::Left;
+        movement.x -= speed_ * deltaTime;
+        moved = true;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+        dir_ = Direction::Right;
+        movement.x += speed_ * deltaTime;
+        moved = true;
+    }
+
+    if (moved) {
+        position_ += movement;
+        clampToWindow();
+        updateShapePositions();
+    }
+    updateTurretRotation();
+}
+
+void PlayerTank::handleMovement(float deltaTime,const Map& map,const std::vector<sf::FloatRect>& tankBlocks)
+{
+    sf::Vector2f movement(0.f,0.f);
+    bool moved=false;
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+    {
+        dir_=Direction::Up;
+        movement.y-=speed_*deltaTime;
+        moved=true;
+    }
+    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+    {
+        dir_=Direction::Down;
+        movement.y+=speed_*deltaTime;
+        moved=true;
+    }
+    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+    {
+        dir_=Direction::Left;
+        movement.x-=speed_*deltaTime;
+        moved=true;
+    }
+    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+    {
+        dir_=Direction::Right;
+        movement.x+=speed_*deltaTime;
+        moved=true;
+    }
+
+    if(moved)
+    {
+        const sf::Vector2f nextPosition=position_+movement;
+        const sf::FloatRect nextBounds=boundsAt(nextPosition);
+        if(!Collision::hitsTankBlock(map,nextBounds) && !hitsTankBlock(nextBounds,tankBlocks))
+            setPosition(nextPosition);
+    }
+    updateTurretRotation();
+}
+
+void PlayerTank::handleMovementWithInput(float deltaTime,const Map& map,const std::vector<sf::FloatRect>& tankBlocks,bool moveUp,bool moveDown,bool moveLeft,bool moveRight)
+{
+    sf::Vector2f movement(0.f,0.f);
+    bool moved=false;
+
+    if(moveUp)
+    {
+        dir_=Direction::Up;
+        movement.y-=speed_*deltaTime;
+        moved=true;
+    }
+    else if(moveDown)
+    {
+        dir_=Direction::Down;
+        movement.y+=speed_*deltaTime;
+        moved=true;
+    }
+    else if(moveLeft)
+    {
+        dir_=Direction::Left;
+        movement.x-=speed_*deltaTime;
+        moved=true;
+    }
+    else if(moveRight)
+    {
+        dir_=Direction::Right;
+        movement.x+=speed_*deltaTime;
+        moved=true;
+    }
+
+    if(moved)
+    {
+        const sf::Vector2f nextPosition=position_+movement;
+        const sf::FloatRect nextBounds=boundsAt(nextPosition);
+        if(!Collision::hitsTankBlock(map,nextBounds) && !hitsTankBlock(nextBounds,tankBlocks))
+            setPosition(nextPosition);
+    }
+    updateTurretRotation();
+}
+
+void PlayerTank::collectItem(Item& item) {
+    if (item.getType() == ItemType::HealthPack) {
+        if (heal(40)) {
+            item.pickUp();
+        }
+    } else if (item.getType() == ItemType::DamagePack) {
+        currentBulletDamage_ = prototype::PlayerBuffDamage;
+        damageBuffTimer_ = 15.f;
+        turretShape_.setFillColor(sf::Color::Yellow);
+        item.pickUp();
+    }
+}
+
+void PlayerTank::setColor(sf::Color color)
+{
+    bodyShape_.setFillColor(color);
+}
