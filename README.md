@@ -34,3 +34,27 @@
 - [中文实验报告](assignment-2/docs/实验报告.md)
 - [区间参数与完整求解均值](assignment-2/results/figures/alpha_solve_mean.png)
 - [单次失败率](assignment-2/results/figures/alpha_failure_rate.png)
+
+## 作业三：正态随机变量的生成
+
+自行实现中心极限定理近似法、Box–Muller 变换和指数提议的拒绝采样，统一输出标准正态目标的 double 样本。比较 CLT 的 m=3、12、48 与另外两种方法，共五种设置；不使用 std::normal_distribution，也不按实测均值、方差重新标准化。
+
+已完成 C++17 实现、编译、确定性测试、快速检查、正式分布与性能实验，并生成中文报告和三张结果图。23,558 项 C++ 检查和 14 类 CLI 非法参数检查通过；正式分布每组生成 1,000,000 个输出，性能在 N=10,000、100,000、1,000,000 下，每设置预热 2 次、测量 20 次，共保留 300 条原始计时。
+
+- [运行说明、复现命令与字段定义](assignment-3/README.md)
+- [三种生成算法](assignment-3/src/normal.hpp)
+- [实验驱动与核心计时](assignment-3/src/driver.cpp)
+- [正确性与分支测试](assignment-3/tests/test_normal.cpp)
+- [中文实验报告](assignment-3/docs/实验报告.md)
+- [分布统计汇总](assignment-3/results/distribution_summary.csv)
+- [性能中位数汇总](assignment-3/results/timing_summary.csv)
+- [密度直方图](assignment-3/results/figures/density.png)
+- [正态 Q–Q 图](assignment-3/results/figures/qq.png)
+- [生成速度对比](assignment-3/results/figures/speed.png)
+- [交付一致性检查](assignment-3/results/delivery_checks.json)
+
+百万输出的中位耗时分别为：CLT m=3 为 16.282 ms、m=12 为 82.699 ms、m=48 为 240.477 ms，Box–Muller 为 30.726 ms，指数拒绝采样为 50.508 ms。拒绝采样的实测接受率为 76.0455%，理论值约为 76.0173%。这些速度为本机本轮实测；CLT m=3 的支持范围为 [-3,3]，没有绝对值大于 3 的输出，报告结合尾部统计与 Q–Q 图解释其近似误差。
+
+本机精简提交副本位于 `D:/CPP/随机化1117`，参照 `随机化1020`、`随机化1103` 整理。13 个文件全部平铺，包含源码、测试、正式配置、三份汇总 CSV、三张 PNG、Markdown 报告、7 页 PDF 报告及文件说明；PDF 路径为 `D:/CPP/随机化1117/实验报告.pdf`。该目录位于仓库外，仓库内保留完整实验工程与 Markdown 报告。
+
+三种算法使用相同的 mt19937_64 引擎与开区间 (0,1) 均匀数映射，种子、真实编译命令、环境及哈希均已记录。可再生的百万样本、构建产物和快速结果被 Git 忽略，正式汇总、原始计时、图表及报告随仓库保存。
