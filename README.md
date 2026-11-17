@@ -8,6 +8,7 @@
 |---|---|---|
 | [assignment-1](assignment-1/README.md) | Freivalds 矩阵乘法随机验证 | 精确验证与随机验证实现、正确性检查、性能与漏检实验、图表和报告初稿 |
 | [assignment-2](assignment-2/README.md) | 抽样区间宽度与随机化中位数 | 两次排序的抽样算法、失败重试、默认正式实验、新种子确认、图表和中文报告 |
+| [assignment-3](assignment-3/README.md) | 正态随机变量的生成 | CLT、Box–Muller、指数拒绝采样，百万样本分布、性能实验、图表与中文报告 |
 
 ## 作业一：Freivalds 矩阵乘法随机验证
 

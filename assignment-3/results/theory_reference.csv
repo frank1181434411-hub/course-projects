@@ -1,0 +1,2 @@
+distribution,mean,variance,excess_kurtosis,rate_abs_gt2,rate_abs_gt3,rejection_acceptance_rate,rejection_attempts_per_output
+"N(0,1)",0.0,1.0,0.0,0.04550026389635843,0.0026997960632601918,0.7601734505331404,1.315489246958914

@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "audit_saved_tables": true,
+  "table_rows": {
+    "distribution_summary": 5,
+    "histogram": 600,
+    "qq": 9175,
+    "timing_summary": 15,
+    "theory_reference": 1
+  },
+  "sample_hashes_and_counts": true,
+  "raw_hashes": true
+}

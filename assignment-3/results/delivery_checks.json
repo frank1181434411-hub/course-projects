@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "formal_outputs": 5000000,
+  "formal_timing_records": 300,
+  "all_tables_recomputed": true,
+  "report_matches_csv": true,
+  "report_links_checked": [
+    "../results/figures/density.png",
+    "../results/figures/qq.png",
+    "../results/figures/speed.png",
+    "../README.md"
+  ],
+  "images": {
+    "density.png": {
+      "size": [
+        1806,
+        1106
+      ],
+      "sha256": "48c16a8c4d00bb687c4174ca29f22916a4523d37c329c195c148ad9d217df48a"
+    },
+    "inspection_sheet.png": {
+      "size": [
+        1050,
+        1681
+      ],
+      "sha256": "7cdbd9e4a43d0be6646e1bfed2e5f2a29f09b7b6880a0d4680669886bebfcc95"
+    },
+    "qq.png": {
+      "size": [
+        1764,
+        1106
+      ],
+      "sha256": "bd0ef2ab51417c9b449994a0f98218025e9d81dd5620c25006fcf2a5e71e2b81"
+    },
+    "speed.png": {
+      "size": [
+        1666,
+        616
+      ],
+      "sha256": "15e59d89d2703666b5ef48659c986de3d30e3306679b531b37dffb12def8d8be"
+    }
+  },
+  "histogram_samples_outside_plot": 0,
+  "qq_extrema_preserved": true,
+  "pdf_generated": false
+}
