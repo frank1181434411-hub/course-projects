@@ -9,6 +9,7 @@
 | [assignment-1](assignment-1/README.md) | Freivalds 矩阵乘法随机验证 | 精确验证与随机验证实现、正确性检查、性能与漏检实验、图表和报告初稿 |
 | [assignment-2](assignment-2/README.md) | 抽样区间宽度与随机化中位数 | 两次排序的抽样算法、失败重试、默认正式实验、新种子确认、图表和中文报告 |
 | [assignment-3](assignment-3/README.md) | 正态随机变量的生成 | CLT、Box–Muller、指数拒绝采样，百万样本分布、性能实验、图表与中文报告 |
+| [assignment-4](assignment-4/README.md) | 蒙特卡洛积分 | 普通均值、等宽分层、精度与耗时、独立复验及 PDF 报告 |
 
 ## 作业一：Freivalds 矩阵乘法随机验证
 
@@ -58,3 +59,13 @@
 本机精简提交副本位于 `D:/CPP/随机化1117`，参照 `随机化1020`、`随机化1103` 整理。13 个文件全部平铺，包含源码、测试、正式配置、三份汇总 CSV、三张 PNG、Markdown 报告、7 页 PDF 报告及文件说明；PDF 路径为 `D:/CPP/随机化1117/实验报告.pdf`。该目录位于仓库外，仓库内保留完整实验工程与 Markdown 报告。
 
 三种算法使用相同的 mt19937_64 引擎与开区间 (0,1) 均匀数映射，种子、真实编译命令、环境及哈希均已记录。可再生的百万样本、构建产物和快速结果被 Git 忽略，正式汇总、原始计时、图表及报告随仓库保存。
+
+## 作业四：蒙特卡洛积分
+
+估计 exp(−x²) 在四种范围内的积分，并在固定 [0,4] 上比较四种等宽分层。正式实验共测量 28 个配置、1,400 次估计，另使用新种子复验两种候选配置。
+
+- [运行说明与复现命令](assignment-4/README.md)
+- [算法实现](assignment-4/src/integral.hpp)
+- [实验报告](assignment-4/docs/实验报告.md) · [PDF](assignment-4/docs/实验报告.pdf)
+- [主实验汇总](assignment-4/results/main_summary.csv) · [独立复验](assignment-4/results/confirmation_summary.csv)
+- [范围与相对 RMSE](assignment-4/results/figures/range_rmse.png) · [分层与相对 RMSE](assignment-4/results/figures/strata_rmse.png) · [精度与耗时](assignment-4/results/figures/accuracy_time.png)

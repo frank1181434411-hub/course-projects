@@ -1,0 +1,112 @@
+{
+  "profile": "formal",
+  "config": {
+    "intervals": [
+      [
+        0,
+        0.5
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        0,
+        4
+      ]
+    ],
+    "target": [
+      0,
+      4
+    ],
+    "sample_sizes": [
+      1000,
+      10000,
+      100000,
+      1000000
+    ],
+    "strata": [
+      1,
+      4,
+      16,
+      64
+    ],
+    "trials": 50,
+    "warmups_per_setting": 2,
+    "master_seed": 2026112401,
+    "schedule_seed": 2026112402,
+    "confirmation_seed": 2026112403,
+    "confirmation_schedule_seed": 2026112404,
+    "confirmation_trials": 50,
+    "relative_rmse_limit": 0.01,
+    "candidate_time_margin": 0.1,
+    "simpson_tolerance": 1e-13,
+    "reference_agreement_tolerance": 5e-13
+  },
+  "environment": {
+    "timestamp": "2026-11-24T12:29:01.565791+08:00",
+    "compiler": "g++ (Rev5, Built by MSYS2 project) 16.1.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+    "commands": [
+      [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "src/driver.cpp",
+        "-o",
+        "D:\\CPP\\random\\assignment-4\\build\\integral.exe"
+      ],
+      [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "tests/test_integral.cpp",
+        "-o",
+        "D:\\CPP\\random\\assignment-4\\build\\test_integral.exe"
+      ]
+    ],
+    "os": "Windows-11-10.0.26100-SP0",
+    "processor": "Intel64 Family 6 Model 190 Stepping 0, GenuineIntel",
+    "machine": "AMD64",
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "engine": "std::mt19937_64",
+    "executable_sha256": "37565e809ad236e5a42d9dcffb2054a1ade9ca1a3a48b84b1986451adfbfb8a7",
+    "source_sha256": {
+      "src/driver.cpp": "47eeb28467cc5c80fc21ab37c18dc318249c31ffb1d3b1a16789d466eb2a464c",
+      "src/integral.hpp": "230a35a1a7986cfb81dd0eae8b88d49878791d8877bcec6707cdee1cca086714",
+      "tests/test_integral.cpp": "c8f14a86262ce9067357e13f2fc2323b9f31d96ea653de2508c234a0d1744553"
+    }
+  },
+  "commands": [
+    [
+      "D:\\CPP\\random\\assignment-4\\build\\integral.exe",
+      "D:\\CPP\\random\\assignment-4\\results\\main_jobs.csv",
+      "D:\\CPP\\random\\assignment-4\\results\\main_core.csv"
+    ],
+    [
+      "D:\\CPP\\random\\assignment-4\\build\\integral.exe",
+      "D:\\CPP\\random\\assignment-4\\results\\confirmation_jobs.csv",
+      "D:\\CPP\\random\\assignment-4\\results\\confirmation_core.csv"
+    ]
+  ],
+  "overlap": "A+B rows are measured once and shared by both analyses",
+  "candidate_rule": "confirm all qualifying target settings within time margin of fastest",
+  "csv_sha256": {
+    "confirmation_core.csv": "6bb0a93d4462ec6d3edbc261b8a4966ed180505ffa1080ffc4d9e1ae43ee0378",
+    "confirmation_jobs.csv": "7635fc2aea426fbc48c99eb3e93948490e440a90831b170254e00f7fd4794f8d",
+    "confirmation_raw.csv": "e0ee0912f8e4edbac9854894e3329fe7dbf9d21a3ced5f1349bf5eab70528698",
+    "confirmation_summary.csv": "eb165fe2ab1c984da82d324b92e74c0e720709468d5644430075fcabce296881",
+    "main_core.csv": "16ba5b632f2c6498024064e07597ea3ad60986b652a7efc6f5c4b44363ba9ad4",
+    "main_jobs.csv": "d9be7c059698c2480bcc608ef0d0f99b568aec3e4bc4f548b640171f0d8bf794",
+    "main_raw.csv": "da0f125e3c3f6187c25fc2ea0462c80a2ff6dc4ae571b5e8de81d75a8e280716",
+    "main_summary.csv": "6dd213c7effd0dcd77fd633c8300576e8f0a51f09b323830afc2c221e94663fe",
+    "references.csv": "4261d94dfc76611e98ec6e408b73624f151d4f7d9316d1af979926e24eea302d"
+  }
+}

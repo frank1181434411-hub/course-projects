@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-11-24T12:29:01.565791+08:00",
+  "compiler": "g++ (Rev5, Built by MSYS2 project) 16.1.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "commands": [
+    [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "src/driver.cpp",
+      "-o",
+      "D:\\CPP\\random\\assignment-4\\build\\integral.exe"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "tests/test_integral.cpp",
+      "-o",
+      "D:\\CPP\\random\\assignment-4\\build\\test_integral.exe"
+    ]
+  ],
+  "os": "Windows-11-10.0.26100-SP0",
+  "processor": "Intel64 Family 6 Model 190 Stepping 0, GenuineIntel",
+  "machine": "AMD64",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "engine": "std::mt19937_64",
+  "executable_sha256": "37565e809ad236e5a42d9dcffb2054a1ade9ca1a3a48b84b1986451adfbfb8a7",
+  "source_sha256": {
+    "src/driver.cpp": "47eeb28467cc5c80fc21ab37c18dc318249c31ffb1d3b1a16789d466eb2a464c",
+    "src/integral.hpp": "230a35a1a7986cfb81dd0eae8b88d49878791d8877bcec6707cdee1cca086714",
+    "tests/test_integral.cpp": "c8f14a86262ce9067357e13f2fc2323b9f31d96ea653de2508c234a0d1744553"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "intervals": [[0, 0.5], [0, 1], [0, 2], [0, 4]],
+  "target": [0, 4],
+  "sample_sizes": [1000, 10000, 100000, 1000000],
+  "strata": [1, 4, 16, 64],
+  "trials": 50,
+  "warmups_per_setting": 2,
+  "master_seed": 2026112401,
+  "schedule_seed": 2026112402,
+  "confirmation_seed": 2026112403,
+  "confirmation_schedule_seed": 2026112404,
+  "confirmation_trials": 50,
+  "relative_rmse_limit": 0.01,
+  "candidate_time_margin": 0.1,
+  "simpson_tolerance": 1e-13,
+  "reference_agreement_tolerance": 5e-13
+}

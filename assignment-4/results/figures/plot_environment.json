@@ -1,0 +1,12 @@
+{
+  "backend": "Agg",
+  "matplotlib": "3.11.2",
+  "numpy": "2.5.4",
+  "font": "C:\\Windows\\Fonts\\msyh.ttc",
+  "figures": [
+    "integrand.png",
+    "range_rmse.png",
+    "strata_rmse.png",
+    "accuracy_time.png"
+  ]
+}
