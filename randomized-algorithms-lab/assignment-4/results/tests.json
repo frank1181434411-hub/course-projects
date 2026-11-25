@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "cpp": "PASS 50 C++ checks",
+  "cli_invalid_cases": 10,
+  "fixed_seed_cli": true,
+  "nondivisible_allocation": true,
+  "reference_checks": 4,
+  "max_reference_difference": 1.1102230246251565e-16
+}

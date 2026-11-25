@@ -1,0 +1,39 @@
+{
+  "timestamp_utc": "2026-11-17T06:27:47.978524+00:00",
+  "commands": [
+    [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "src/driver.cpp",
+      "-o",
+      "D:\\CPP\\random\\assignment-3\\build\\normal.exe"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "tests/test_normal.cpp",
+      "-o",
+      "D:\\CPP\\random\\assignment-3\\build\\test_normal.exe"
+    ]
+  ],
+  "compiler": "g++ (Rev5, Built by MSYS2 project) 16.1.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "optimization": "-O2",
+  "os": "Windows-11-10.0.26100-SP0",
+  "machine": "AMD64",
+  "processor": "Intel64 Family 6 Model 190 Stepping 0, GenuineIntel",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "byteorder": "little",
+  "executable_sha256": "8177f15165e190916ebe8b23d6e0a11f1fb841ba45c76bd648dd57fc1b7597e1",
+  "source_sha256": {
+    "src\\driver.cpp": "8be71c9f02fe5774e225c462c5f8df0aca0d3e3a6490d65fa5a0851f6c515e06",
+    "src\\normal.hpp": "84993c5918eb05741cbc02ce10cb366d7accea96e6f227782777964fd8a9e968"
+  },
+  "engine": "std::mt19937_64",
+  "uniform": "(double(rng() >> 12) + 0.5) * 2^-52; open (0,1) midpoint grid"
+}

@@ -1,0 +1,9 @@
+{
+  "distribution_n": 1000000,
+  "sizes": [10000, 100000, 1000000],
+  "trials": 20,
+  "warmups": 2,
+  "master_seed": 2026111701,
+  "schedule_seed": 2026111702,
+  "settings": [["clt", 3], ["clt", 12], ["clt", 48], ["box_muller", 12], ["rejection", 12]]
+}

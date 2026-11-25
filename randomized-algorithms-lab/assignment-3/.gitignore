@@ -1,0 +1,5 @@
+/build/
+/.mplconfig/
+/**/__pycache__/
+/results/quick/
+/results/samples/

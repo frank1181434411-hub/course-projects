@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "profile": "formal",
+  "main_rows": 1400,
+  "main_settings": 28,
+  "overlap_rows": 200,
+  "confirmation_rows": 100,
+  "confirmation_settings": 2
+}

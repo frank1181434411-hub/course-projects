@@ -1,0 +1,11 @@
+{
+  "matplotlib": "3.11.2",
+  "numpy": "2.5.4",
+  "font": "C:\\Windows\\Fonts\\msyh.ttc",
+  "histogram_range": [
+    -6,
+    6
+  ],
+  "bin_width": 0.1,
+  "qq_rule": "unique rounded ranks: 1401 linear + 300 geometric in each 1% tail, including extrema"
+}
