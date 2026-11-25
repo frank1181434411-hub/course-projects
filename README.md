@@ -13,6 +13,7 @@
 | [Campus Lab Manager](./campus-lab-manager/) | 数据库原理与应用 | Python 3.12、Flask、MySQL、PyMySQL | 高校机房管理系统，覆盖用户权限、机房与机位、排课考勤、上下机记录和设备报修等业务。 |
 | [Simple Paint](./simple-paint/) | C++ / Qt 综合实践 | C++23、Qt Widgets、qmake | 简易桌面画板，支持基本图形绘制、样式设置、图形选择与多选、删除及绘图文件读写。 |
 | [Traffic Query System](./traffic-query-system/) | 数据结构与算法综合实验 | C++、Qt、图、线段树 | 交通路线查询系统，支持按距离、费用和时间规划路线，并使用线段树维护 Dijkstra 算法中的节点距离。 |
+| [Randomized Algorithms Lab](./randomized-algorithms-lab/) | 随机化算法 | C++17、Python、matplotlib | 随机化算法课程实验，包含矩阵乘法验证、随机化中位数、正态随机变量生成和蒙特卡洛积分。 |
 
 ## 项目说明
 
@@ -46,6 +47,12 @@
 
 [查看项目详情](./traffic-query-system/)
 
+### Randomized Algorithms Lab
+
+随机化算法课程实验合集，包含 Freivalds 矩阵乘法验证、抽样式随机化中位数、三种正态随机变量生成方法，以及普通均值和等宽分层蒙特卡洛积分。各实验保留源码、运行说明、实测结果、图表和报告。
+
+[查看项目详情](./randomized-algorithms-lab/)
+
 ## 仓库结构
 
 ```text
@@ -55,7 +62,8 @@ course-projects/
 ├── graphics-algorithm-painter/
 ├── campus-lab-manager/
 ├── simple-paint/
-└── traffic-query-system/
+├── traffic-query-system/
+└── randomized-algorithms-lab/
 ```
 
 ## 使用说明
