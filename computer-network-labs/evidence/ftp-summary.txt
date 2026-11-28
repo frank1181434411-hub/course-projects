@@ -1,0 +1,5 @@
+PASS GUI: login 230; EPSV; LIST; transfer 226; QUIT 221; networklabs-test.txt listed
+PASS GUI: password edit masked; PASS argument redacted; password absent from transcript/list/status
+PASS GUI: wrong password returns FTP 530 and visible failure status
+PASS GUI: unused local port gives visible connection failure; stale directory cleared
+PASS GUI: silent-server receive timeout; UI responds to WM_NULL within 250 ms during network wait

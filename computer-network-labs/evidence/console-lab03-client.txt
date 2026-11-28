@@ -1,0 +1,9 @@
+LAB03 CLIENT
+CONNECTED; type messages or /quit
+RECV: server-first-in-console
+SENT: client-first-in-console
+RECV: server-second-in-console
+SENT: client-second-in-console
+LOCAL QUIT
+PEER CLOSED
+SESSION CLOSED

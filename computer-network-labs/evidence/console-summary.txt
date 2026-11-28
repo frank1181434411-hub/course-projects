@@ -1,0 +1,2 @@
+PASS lab02: two visible Windows consoles; independent server/client processes; two messages each direction; /quit; both exit 0
+PASS lab03: two visible Windows consoles; independent server/client processes; two messages each direction; /quit; both exit 0

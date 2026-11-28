@@ -1,0 +1,28 @@
+{
+  "folders": [
+    {"name": "构建与说明", "path": "."}
+  ],
+  "settings": {
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.useCMakePresets": "always",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+  },
+  "extensions": {"recommendations": ["ms-vscode.cpptools", "ms-vscode.cmake-tools"]},
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {"label": "Configure MSVC x64", "type": "process", "command": "cmake", "args": ["--preset", "msvc-x64"], "options": {"cwd": "${workspaceFolder:构建与说明}"}, "problemMatcher": []},
+      {"label": "Build Debug", "type": "process", "command": "cmake", "args": ["--build", "--preset", "debug"], "options": {"cwd": "${workspaceFolder:构建与说明}"}, "dependsOn": "Configure MSVC x64", "group": {"kind": "build", "isDefault": true}, "problemMatcher": "$msCompile"}
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {"name": "Lab 02 TCP Server", "type": "cppvsdbg", "request": "launch", "program": "${workspaceFolder:构建与说明}/out/build/msvc-x64/Debug/lab02_server.exe", "args": ["9325"], "cwd": "${workspaceFolder:构建与说明}", "console": "externalTerminal", "preLaunchTask": "Build Debug"},
+      {"name": "Lab 02 TCP Client", "type": "cppvsdbg", "request": "launch", "program": "${workspaceFolder:构建与说明}/out/build/msvc-x64/Debug/lab02_client.exe", "args": ["127.0.0.1", "9325"], "cwd": "${workspaceFolder:构建与说明}", "console": "externalTerminal", "preLaunchTask": "Build Debug"},
+      {"name": "Lab 03 TCP Server", "type": "cppvsdbg", "request": "launch", "program": "${workspaceFolder:构建与说明}/out/build/msvc-x64/Debug/lab03_server.exe", "args": ["9326"], "cwd": "${workspaceFolder:构建与说明}", "console": "externalTerminal", "preLaunchTask": "Build Debug"},
+      {"name": "Lab 03 TCP Client", "type": "cppvsdbg", "request": "launch", "program": "${workspaceFolder:构建与说明}/out/build/msvc-x64/Debug/lab03_client.exe", "args": ["127.0.0.1", "9326"], "cwd": "${workspaceFolder:构建与说明}", "console": "externalTerminal", "preLaunchTask": "Build Debug"},
+      {"name": "Lab 03 FTP GUI", "type": "cppvsdbg", "request": "launch", "program": "${workspaceFolder:构建与说明}/out/build/msvc-x64/Debug/lab03_ftp.exe", "cwd": "${workspaceFolder:构建与说明}", "preLaunchTask": "Build Debug"}
+    ]
+  }
+}

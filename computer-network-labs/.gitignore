@@ -1,0 +1,17 @@
+/out/
+/CMakeUserPresets.json
+/.vs/
+/.local/
+*.user
+*.local.json
+*.log
+*.tmp
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.lib
+*.exp
+*.dpapi
+*credentials*
+__pycache__/

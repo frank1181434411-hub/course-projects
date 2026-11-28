@@ -1,0 +1,16 @@
+S: 220 NetworkLabs local FTP ready
+C: USER netlab
+S: 331 Username ok, send password.
+C: PASS [REDACTED]
+S: 230 Login successful.
+C: CWD /
+S: 250 "/" is the current directory.
+C: TYPE A
+S: 200 Type set to: ASCII.
+C: EPSV
+S: 229 Entering extended passive mode (|||56875|).
+C: LIST
+S: 125 Data connection already open. Transfer starting.
+S: 226 Transfer complete.
+C: QUIT
+S: 221 Goodbye.
