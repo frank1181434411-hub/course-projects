@@ -1,0 +1,14 @@
+Observed on Windows 11, 2026-11-28 (Asia/Shanghai)
+Base: origin/main 85ba4ca183f369b16c46cc5c535238983e7cfd22
+MSVC compiler: 19.52.37029.0, x64
+Build Tools: Visual Studio 2026 18.12.1
+Windows SDK: 10.0.26100.9457, include/lib version directory 10.0.26100.0
+CMake: 4.3.1-msvc1 initially; shared PATH command 4.3.4 also configured successfully
+Debug targets built: lab02_server, lab02_client, lab03_server, lab03_client, lab03_ftp
+VS Code: 1.147.0
+C/C++ extension: 1.35.6
+CMake Tools extension: 1.25.10
+VS Code workspace F5: Configure/Build tasks completed; cppvsdbg launched lab02_server and loaded Ws2_32.dll; debug session stopped
+FTP server: pyftpdlib 2.2.0, loopback 127.0.0.1:2121
+Credentials: local DPAPI encrypted file; never committed
+Packet Tracer: not installed/logged in; lab01 topology/ping/Simulation/sample open pending

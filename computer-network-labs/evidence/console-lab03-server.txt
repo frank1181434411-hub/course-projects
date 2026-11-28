@@ -1,0 +1,9 @@
+LAB03 SERVER
+LISTENING 127.0.0.1:19426
+CONNECTED; type messages or /quit
+SENT: server-first-in-console
+RECV: client-first-in-console
+SENT: server-second-in-console
+RECV: client-second-in-console
+PEER CLOSED
+SESSION CLOSED

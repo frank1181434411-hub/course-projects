@@ -1,0 +1,7 @@
+PASS lab02: server-first; bidirectional independent messages; UTF-8/9000-byte framing; client /quit; both exit 0
+PASS lab02: server /quit; peer exits without keyboard input
+PASS lab02: fragmented/coalesced frames; remote EOF
+PASS lab03: server-first; bidirectional independent messages; UTF-8/9000-byte framing; client /quit; both exit 0
+PASS lab03: server /quit; peer exits without keyboard input
+PASS lab03: fragmented/coalesced frames; remote EOF
+PASS lab03: unused local port produces a connection error and exit 1
