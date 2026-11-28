@@ -80,6 +80,8 @@ python tests/verify_ftp_gui.py --credentials-helper D:\NetworkLabs\tools\ftp_lab
 
 三个报告 Markdown 版本随代码提交。正式 Word 版按对应课程模板的版式及章节生成，保留在本机 D:\NetworkLabs\reports；封面个人信息留空，避免套用样例中他人的信息。实验一正式文件带“待验证”标记，补完 Packet Tracer 实操后才能作为完整报告提交。
 
+本地还通过 Word 实际打开 DOCX 并导出了同名 PDF，实验一/二/三分别为 3/3/4 页；五个报告章节、样例身份信息清理和版面抽查均通过。PDF 仅留本地，详见 evidence/report-validation.txt。
+
 实验一需要：从 Cisco 官方资源页登录下载稳定版；实际搭建图 1 的八台设备；粘贴并校核接口配置；PC1↔PC2 及 PC0↔PC3 ping；Simulation 记录协议 41 封装；另行试开课程旧样例；保存自己的 topology.pkt 和实际 running-config。没有用旧 `.pkt` 冒充成果。
 
 ## 参考

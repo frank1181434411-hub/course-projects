@@ -1,0 +1,10 @@
+2026-11-28 (Asia/Shanghai): local report validation
+Word reports generated with each course template's layout/styles into fresh packages.
+Microsoft Word opened each DOCX and exported matching PDFs successfully.
+Lab01: DOCX reopened; 3 PDF pages; all 5 report sections present; pending Packet Tracer execution clearly marked.
+Lab02: DOCX reopened; 3 PDF pages; all 5 report sections present.
+Lab03: DOCX reopened; 4 PDF pages; all 5 report sections present; actual FTP GUI screenshot included.
+Sample student identifiers absent from all reports; personal cover fields left blank.
+Visual spot checks of report pages passed.
+Earlier heading-check failure came from Chinese literals being corrupted in a PowerShell-to-Python pipe; a UTF-8 script verified the original PDFs successfully.
+DOCX/PDF files and course originals are retained locally and excluded from this commit.
